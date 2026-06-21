@@ -11,21 +11,36 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
-      if (session?.user) fetchProfile(session.user.id)
-      else setLoading(false)
-    })
+      if (session?.user) {
+        fetchProfile(session.user.id)
+      } else {
+        setLoading(false)
+      }
+    }).catch(() => setLoading(false))
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
-      if (session?.user) fetchProfile(session.user.id)
-      else { setProfile(null); setLoading(false) }
+      if (session?.user) {
+        fetchProfile(session.user.id)
+      } else {
+        setProfile(null)
+        setLoading(false)
+      }
     })
+
     return () => subscription.unsubscribe()
   }, [])
 
   async function fetchProfile(userId) {
-    const { data } = await supabase.from('profiles').select('*').eq('id', userId).single()
-    setProfile(data)
-    setLoading(false)
+    try {
+      const { data } = await supabase
+        .from('profiles').select('*').eq('id', userId).single()
+      setProfile(data)
+    } catch (err) {
+      console.error('Profile fetch error:', err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function signUp({ email, password, fullName, role, phone }) {
