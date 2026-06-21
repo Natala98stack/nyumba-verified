@@ -1,11 +1,22 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+
+function useMobile() {
+  const [mobile, setMobile] = useState(window.innerWidth < 768)
+  useEffect(() => {
+    const fn = () => setMobile(window.innerWidth < 768)
+    window.addEventListener('resize', fn)
+    return () => window.removeEventListener('resize', fn)
+  }, [])
+  return mobile
+}
 
 export default function Login() {
   const { signIn } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const mobile = useMobile()
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -36,40 +47,39 @@ export default function Login() {
       position: 'relative', overflow: 'hidden',
     }}>
 
-      {/* Background decorative blobs — same as landing */}
-      <div style={{ position: 'absolute', top: -120, right: -120, width: 600, height: 600, background: 'radial-gradient(circle, rgba(29,158,117,0.1) 0%, transparent 65%)', borderRadius: '50%', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', bottom: -100, left: -100, width: 500, height: 500, background: 'radial-gradient(circle, rgba(29,158,117,0.07) 0%, transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', top: '40%', left: '60%', width: 300, height: 300, background: 'radial-gradient(circle, rgba(29,158,117,0.05) 0%, transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }} />
+      {/* Background blobs */}
+      <div style={{ position: 'absolute', top: -120, right: -120, width: mobile ? 300 : 600, height: mobile ? 300 : 600, background: 'radial-gradient(circle, rgba(29,158,117,0.1) 0%, transparent 65%)', borderRadius: '50%', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: -100, left: -100, width: mobile ? 280 : 500, height: mobile ? 280 : 500, background: 'radial-gradient(circle, rgba(29,158,117,0.07) 0%, transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }} />
 
       {/* Nav */}
-      <nav style={{ padding: '24px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
+      <nav style={{ padding: mobile ? '20px 20px' : '24px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 9, textDecoration: 'none' }}>
           <div style={{ width: 32, height: 32, background: '#1d9e75', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: 'white', fontSize: 15 }}>N</div>
-          <span style={{ fontWeight: 700, fontSize: 16, color: '#111', letterSpacing: -0.4 }}>NyumbaVerified</span>
+          <span style={{ fontWeight: 700, fontSize: 15, color: '#111', letterSpacing: -0.3 }}>NyumbaVerified</span>
         </Link>
-        <p style={{ color: '#888', fontSize: 14, margin: 0 }}>
-          Don't have an account?{' '}
+        <p style={{ color: '#888', fontSize: 13, margin: 0 }}>
+          No account?{' '}
           <Link to="/signup" style={{ color: '#1d9e75', fontWeight: 600, textDecoration: 'none' }}>Sign up free</Link>
         </p>
       </nav>
 
-      {/* Main content — centered card */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 24px 48px', position: 'relative' }}>
+      {/* Centered card */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: mobile ? '16px 16px 40px' : '24px 24px 48px', position: 'relative' }}>
         <div style={{ width: '100%', maxWidth: 400 }}>
 
-          {/* Card */}
+          {/* Frosted glass card */}
           <div style={{
-            background: 'rgba(255,255,255,0.85)',
+            background: 'rgba(255,255,255,0.88)',
             backdropFilter: 'blur(20px)',
-            borderRadius: 20,
-            border: '1px solid rgba(255,255,255,0.9)',
+            borderRadius: mobile ? 16 : 20,
+            border: '1px solid rgba(255,255,255,0.95)',
             boxShadow: '0 8px 40px rgba(29,158,117,0.1), 0 1px 3px rgba(0,0,0,0.06)',
-            padding: '40px 36px',
+            padding: mobile ? '28px 24px' : '40px 36px',
           }}>
 
             {/* Header */}
-            <div style={{ marginBottom: 28 }}>
-              <h1 style={{ fontSize: 26, fontWeight: 800, color: '#0a0a0a', margin: '0 0 6px', letterSpacing: -0.6 }}>
+            <div style={{ marginBottom: 24 }}>
+              <h1 style={{ fontSize: mobile ? 22 : 26, fontWeight: 800, color: '#0a0a0a', margin: '0 0 5px', letterSpacing: -0.5 }}>
                 Welcome back
               </h1>
               <p style={{ color: '#888', fontSize: 14, margin: 0 }}>
@@ -91,21 +101,22 @@ export default function Login() {
                   onFocus={() => setFocused('email')}
                   onBlur={() => setFocused(null)}
                   style={{
-                    width: '100%', padding: '12px 15px',
+                    width: '100%', padding: '12px 14px',
                     background: focused === 'email' ? '#fff' : 'rgba(255,255,255,0.7)',
                     border: `1.5px solid ${focused === 'email' ? '#1d9e75' : '#e0e0e0'}`,
-                    borderRadius: 11, fontSize: 14, color: '#111',
+                    borderRadius: 10, fontSize: 15, color: '#111',
                     outline: 'none', boxSizing: 'border-box',
                     transition: 'all 0.2s', caretColor: '#1d9e75',
                     boxShadow: focused === 'email' ? '0 0 0 3px rgba(29,158,117,0.1)' : 'none',
+                    WebkitAppearance: 'none',
                   }}
                 />
               </div>
 
               <div style={{ marginBottom: 20 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                  <label style={{ fontSize: 13, fontWeight: 600, color: '#444' }}>Password</label>
-                </div>
+                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#444', marginBottom: 6 }}>
+                  Password
+                </label>
                 <input
                   type="password" required
                   value={form.password}
@@ -114,36 +125,35 @@ export default function Login() {
                   onFocus={() => setFocused('password')}
                   onBlur={() => setFocused(null)}
                   style={{
-                    width: '100%', padding: '12px 15px',
+                    width: '100%', padding: '12px 14px',
                     background: focused === 'password' ? '#fff' : 'rgba(255,255,255,0.7)',
                     border: `1.5px solid ${focused === 'password' ? '#1d9e75' : '#e0e0e0'}`,
-                    borderRadius: 11, fontSize: 14, color: '#111',
+                    borderRadius: 10, fontSize: 15, color: '#111',
                     outline: 'none', boxSizing: 'border-box',
                     transition: 'all 0.2s', caretColor: '#1d9e75',
                     boxShadow: focused === 'password' ? '0 0 0 3px rgba(29,158,117,0.1)' : 'none',
+                    WebkitAppearance: 'none',
                   }}
                 />
               </div>
 
               {error && (
-                <div style={{
-                  background: '#fff5f5', border: '1px solid #fecaca',
-                  borderRadius: 10, padding: '10px 14px', marginBottom: 16,
-                  color: '#dc2626', fontSize: 13,
-                }}>{error}</div>
+                <div style={{ background: '#fff5f5', border: '1px solid #fecaca', borderRadius: 10, padding: '10px 14px', marginBottom: 14, color: '#dc2626', fontSize: 13 }}>
+                  {error}
+                </div>
               )}
 
               <button
                 type="submit" disabled={loading}
                 style={{
-                  width: '100%', padding: '13px',
+                  width: '100%', padding: '14px',
                   background: loading ? 'rgba(29,158,117,0.6)' : '#1d9e75',
                   border: 'none', borderRadius: 11,
-                  color: 'white', fontSize: 15, fontWeight: 700,
+                  color: 'white', fontSize: 16, fontWeight: 700,
                   cursor: loading ? 'not-allowed' : 'pointer',
-                  letterSpacing: -0.2,
                   boxShadow: loading ? 'none' : '0 4px 18px rgba(29,158,117,0.35)',
                   transition: 'all 0.2s',
+                  WebkitAppearance: 'none',
                 }}
               >
                 {loading ? 'Signing in…' : 'Sign in →'}
@@ -157,7 +167,7 @@ export default function Login() {
               <div style={{ flex: 1, height: 1, background: '#f0f0f0' }} />
             </div>
 
-            <p style={{ textAlign: 'center', color: '#888', fontSize: 13, margin: 0 }}>
+            <p style={{ textAlign: 'center', color: '#888', fontSize: 14, margin: 0 }}>
               New here?{' '}
               <Link to="/signup" style={{ color: '#1d9e75', fontWeight: 600, textDecoration: 'none' }}>
                 Create a free account
@@ -165,9 +175,9 @@ export default function Login() {
             </p>
           </div>
 
-          {/* Trust badges below card */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 24, flexWrap: 'wrap' }}>
-            {['🔒 Escrow protected', '✅ ID verified landlords', '🌍 Pan-African'].map(b => (
+          {/* Trust badges */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: mobile ? 16 : 24, marginTop: 20, flexWrap: 'wrap' }}>
+            {['🔒 Escrow protected', '✅ ID verified', '🌍 Pan-African'].map(b => (
               <span key={b} style={{ color: '#888', fontSize: 12, fontWeight: 500 }}>{b}</span>
             ))}
           </div>
