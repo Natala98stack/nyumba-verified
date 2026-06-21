@@ -10,12 +10,22 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (profile && profile.role !== 'admin') {
+    if (!profile) return
+    if (profile.role !== 'admin') {
       navigate('/dashboard')
       return
     }
-    if (profile) fetchStats()
+    fetchStats()
   }, [profile])
+
+  if (!profile) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <p className="text-gray-400 mb-3">Loading admin dashboard…</p>
+        <a href="/login" className="text-brand-600 text-sm underline">Click here if stuck</a>
+      </div>
+    </div>
+  )
 
   async function fetchStats() {
     const [users, listings, viewings, reports] = await Promise.all([
