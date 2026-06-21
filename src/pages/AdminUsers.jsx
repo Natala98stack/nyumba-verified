@@ -11,10 +11,7 @@ export default function AdminUsers() {
   useEffect(() => { fetchUsers() }, [])
 
   async function fetchUsers() {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .order('created_at', { ascending: false })
+   const { data } = await supabase.rpc('get_all_profiles')
     setUsers(data || [])
     setLoading(false)
   }

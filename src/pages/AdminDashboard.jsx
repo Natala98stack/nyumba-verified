@@ -29,7 +29,7 @@ export default function AdminDashboard() {
 
   async function fetchStats() {
     const [users, listings, viewings, reports] = await Promise.all([
-      supabase.from('profiles').select('id'),
+      supabase.rpc('get_all_profiles'),
       supabase.from('listings').select('id'),
       supabase.from('viewings').select('id'),
       supabase.from('fraud_reports').select('id'),
