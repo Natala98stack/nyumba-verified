@@ -14,21 +14,21 @@ export default function AdminDashboard() {
       navigate('/dashboard')
       return
     }
-    fetchStats()
+    if (profile) fetchStats()
   }, [profile])
 
   async function fetchStats() {
     const [users, listings, viewings, reports] = await Promise.all([
-      supabase.from('profiles').select('id', { count: 'exact', head: true }),
-      supabase.from('listings').select('id', { count: 'exact', head: true }),
-      supabase.from('viewings').select('id', { count: 'exact', head: true }),
-      supabase.from('fraud_reports').select('id', { count: 'exact', head: true }),
+      supabase.from('profiles').select('id'),
+      supabase.from('listings').select('id'),
+      supabase.from('viewings').select('id'),
+      supabase.from('fraud_reports').select('id'),
     ])
     setStats({
-      users: users.count || 0,
-      listings: listings.count || 0,
-      viewings: viewings.count || 0,
-      reports: reports.count || 0,
+      users: users.data?.length || 0,
+      listings: listings.data?.length || 0,
+      viewings: viewings.data?.length || 0,
+      reports: reports.data?.length || 0,
     })
     setLoading(false)
   }
@@ -59,7 +59,6 @@ export default function AdminDashboard() {
         <h1 className="text-2xl font-semibold text-gray-800 mb-2">Admin Dashboard</h1>
         <p className="text-gray-500 text-sm mb-8">Platform overview and management</p>
 
-        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {STAT_CARDS.map(card => (
             <Link key={card.label} to={card.link}
@@ -73,7 +72,6 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {/* Quick links */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Link to="/admin/users" className="bg-white rounded-xl border border-gray-100 p-5 hover:shadow-sm hover:border-brand-200 transition-all flex items-center gap-4">
             <span className="text-3xl">👥</span>
