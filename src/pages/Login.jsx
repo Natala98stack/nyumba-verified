@@ -8,6 +8,7 @@ export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [focusedField, setFocusedField] = useState(null)
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -23,263 +24,295 @@ export default function Login() {
     }
   }
 
+  const CITIES = ['Nairobi', 'Lagos', 'Accra', 'Johannesburg', 'Cairo', 'Dar es Salaam', 'Kampala', 'London', 'Dubai']
+
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'system-ui, sans-serif' }}>
+    <div style={{
+      display: 'flex', minHeight: '100vh',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+      background: '#060910',
+    }}>
 
-      {/* LEFT PANEL — Nairobi Illustration */}
+      {/* LEFT PANEL */}
       <div style={{
-        flex: '0 0 55%', position: 'relative', overflow: 'hidden',
-        background: 'linear-gradient(160deg, #0a1628 0%, #0d2a1f 50%, #0a1f2e 100%)',
-        display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+        flex: '0 0 52%', position: 'relative', overflow: 'hidden',
+        display: 'flex', flexDirection: 'column',
       }}>
-        {/* Stars */}
-        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-          {[...Array(40)].map((_, i) => (
-            <div key={i} style={{
-              position: 'absolute',
-              width: i % 5 === 0 ? '2px' : '1px',
-              height: i % 5 === 0 ? '2px' : '1px',
-              background: 'white',
-              borderRadius: '50%',
-              opacity: 0.3 + (i % 7) * 0.1,
-              left: `${(i * 37 + 13) % 100}%`,
-              top: `${(i * 29 + 7) % 60}%`,
-            }} />
-          ))}
+        {/* Animated gradient background */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(135deg, #060d1a 0%, #0a1628 30%, #071a12 65%, #060d1a 100%)',
+        }} />
+
+        {/* Large globe SVG */}
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <svg viewBox="0 0 500 500" style={{ width: '85%', maxWidth: 480, opacity: 0.85 }}>
+            {/* Outer glow ring */}
+            <circle cx="250" cy="250" r="200" fill="none" stroke="rgba(29,158,117,0.08)" strokeWidth="40" />
+            <circle cx="250" cy="250" r="180" fill="none" stroke="rgba(29,158,117,0.06)" strokeWidth="1" />
+
+            {/* Globe base */}
+            <circle cx="250" cy="250" r="160" fill="#091422" stroke="rgba(29,158,117,0.2)" strokeWidth="1" />
+
+            {/* Grid lines - latitude */}
+            {[-120, -80, -40, 0, 40, 80, 120].map((offset, i) => {
+              const r = Math.sqrt(Math.max(0, 160*160 - offset*offset))
+              return r > 0 ? <ellipse key={i} cx="250" cy={250+offset} rx={r} ry={r*0.3} fill="none" stroke="rgba(29,158,117,0.12)" strokeWidth="0.5" /> : null
+            })}
+
+            {/* Grid lines - longitude */}
+            {[0, 30, 60, 90, 120, 150].map((angle, i) => (
+              <ellipse key={i} cx="250" cy="250" rx={160 * Math.abs(Math.cos(angle * Math.PI / 180))} ry="160" fill="none" stroke="rgba(29,158,117,0.12)" strokeWidth="0.5" transform={`rotate(${angle}, 250, 250)`} />
+            ))}
+
+            {/* Africa continent shape (simplified) */}
+            <path d="M230,145 L255,140 L270,155 L275,175 L268,195 L278,215 L280,240 L272,265 L260,285 L248,305 L240,315 L232,300 L228,280 L222,260 L218,240 L220,215 L215,195 L218,175 L225,160 Z"
+              fill="rgba(29,158,117,0.35)" stroke="rgba(29,158,117,0.6)" strokeWidth="1.5" />
+
+            {/* Madagascar */}
+            <ellipse cx="282" cy="282" rx="6" ry="12" fill="rgba(29,158,117,0.25)" stroke="rgba(29,158,117,0.4)" strokeWidth="1" transform="rotate(15,282,282)" />
+
+            {/* Europe hint */}
+            <path d="M218,115 L235,108 L248,112 L250,125 L238,130 L220,128 Z" fill="rgba(29,158,117,0.12)" stroke="rgba(29,158,117,0.2)" strokeWidth="0.8" />
+
+            {/* Middle East hint */}
+            <path d="M272,148 L290,145 L298,158 L292,170 L275,168 Z" fill="rgba(29,158,117,0.1)" stroke="rgba(29,158,117,0.2)" strokeWidth="0.8" />
+
+            {/* City dots with pulse rings */}
+            {[
+              { x: 258, y: 220, city: 'Nairobi', size: 5 },
+              { x: 220, y: 200, city: 'Lagos', size: 4 },
+              { x: 218, y: 190, city: 'Accra', size: 3.5 },
+              { x: 268, y: 248, city: 'Dar es Salaam', size: 3 },
+              { x: 248, y: 165, city: 'Cairo', size: 4 },
+              { x: 265, y: 278, city: 'Johannesburg', size: 4 },
+              { x: 255, y: 210, city: 'Kampala', size: 3 },
+              { x: 226, y: 183, city: 'Abidjan', size: 3 },
+            ].map((dot, i) => (
+              <g key={i}>
+                <circle cx={dot.x} cy={dot.y} r={dot.size * 2.5} fill="rgba(29,158,117,0.08)" />
+                <circle cx={dot.x} cy={dot.y} r={dot.size * 1.5} fill="rgba(29,158,117,0.15)" />
+                <circle cx={dot.x} cy={dot.y} r={dot.size * 0.7} fill="#1d9e75" />
+              </g>
+            ))}
+
+            {/* Connection lines between cities */}
+            {[
+              [258, 220, 220, 200],
+              [258, 220, 265, 278],
+              [258, 220, 248, 165],
+              [220, 200, 218, 190],
+              [265, 278, 248, 165],
+            ].map(([x1, y1, x2, y2], i) => (
+              <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                stroke="rgba(29,158,117,0.2)" strokeWidth="0.8" strokeDasharray="3,3" />
+            ))}
+
+            {/* Globe rim highlight */}
+            <circle cx="250" cy="250" r="160" fill="none"
+              stroke="url(#rimGrad)" strokeWidth="1.5" />
+
+            <defs>
+              <linearGradient id="rimGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="rgba(29,158,117,0.6)" />
+                <stop offset="50%" stopColor="rgba(29,158,117,0.1)" />
+                <stop offset="100%" stopColor="rgba(29,158,117,0.4)" />
+              </linearGradient>
+            </defs>
+          </svg>
         </div>
 
-        {/* Moon */}
+        {/* City marquee strip */}
         <div style={{
-          position: 'absolute', top: '8%', right: '15%',
-          width: 48, height: 48,
-          background: '#e8d5a3',
-          borderRadius: '50%',
-          boxShadow: '0 0 30px rgba(232, 213, 163, 0.3)',
-          opacity: 0.9,
-        }} />
-        <div style={{
-          position: 'absolute', top: '8%', right: '12%',
-          width: 42, height: 42,
-          background: '#0a1628',
-          borderRadius: '50%',
-        }} />
-
-        {/* Nairobi SVG Skyline */}
-        <svg viewBox="0 0 800 420" style={{ width: '100%', position: 'relative', zIndex: 2 }} preserveAspectRatio="xMidYMax meet">
-
-          {/* Sky glow */}
-          <ellipse cx="400" cy="420" rx="350" ry="80" fill="rgba(29, 158, 117, 0.08)" />
-
-          {/* KICC Tower (tallest, center) */}
-          <rect x="370" y="120" width="60" height="280" fill="#162d3d" />
-          <rect x="378" y="100" width="44" height="25" fill="#1a3547" />
-          <rect x="385" y="85" width="30" height="18" fill="#1a3547" />
-          <rect x="392" y="68" width="16" height="20" fill="#1a3547" />
-          <line x1="400" y1="40" x2="400" y2="68" stroke="#2a5a4a" strokeWidth="2" />
-          {/* KICC windows */}
-          {[130, 150, 170, 190, 210, 230, 250, 270, 290, 310].map((y, i) => (
-            <g key={i}>
-              <rect x="378" y={y} width="8" height="12" fill={i % 3 === 0 ? '#1d9e75' : 'rgba(255,200,100,0.15)'} rx="1" />
-              <rect x="392" y={y} width="8" height="12" fill={i % 4 === 0 ? '#1d9e75' : 'rgba(255,200,100,0.1)'} rx="1" />
-              <rect x="414" y={y} width="8" height="12" fill={i % 5 === 0 ? 'rgba(255,200,100,0.3)' : 'rgba(255,200,100,0.1)'} rx="1" />
-            </g>
-          ))}
-
-          {/* UAP Tower (left of center) */}
-          <rect x="280" y="160" width="55" height="240" fill="#0f2233" />
-          <rect x="288" y="145" width="39" height="18" fill="#132a40" />
-          <polygon points="307,130 307,148 326,148" fill="#132a40" />
-          {[170, 190, 210, 230, 250, 270, 290, 310].map((y, i) => (
-            <g key={i}>
-              <rect x="289" y={y} width="7" height="10" fill={i % 3 === 0 ? 'rgba(255,200,100,0.3)' : 'rgba(255,200,100,0.1)'} rx="1" />
-              <rect x="302" y={y} width="7" height="10" fill={i % 4 === 0 ? 'rgba(255,200,100,0.25)' : 'rgba(100,150,255,0.1)'} rx="1" />
-              <rect x="315" y={y} width="7" height="10" fill={i % 5 === 0 ? 'rgba(255,200,100,0.2)' : 'rgba(255,200,100,0.08)'} rx="1" />
-            </g>
-          ))}
-
-          {/* Times Tower */}
-          <rect x="450" y="175" width="50" height="225" fill="#122030" />
-          <rect x="458" y="162" width="34" height="15" fill="#162840" />
-          <rect x="463" y="150" width="24" height="14" fill="#162840" />
-          <line x1="475" y1="130" x2="475" y2="150" stroke="#1d9e75" strokeWidth="2" opacity="0.6" />
-          {[185, 205, 225, 245, 265, 285, 305].map((y, i) => (
-            <g key={i}>
-              <rect x="459" y={y} width="7" height="10" fill={i % 2 === 0 ? 'rgba(100,180,255,0.25)' : 'rgba(255,200,100,0.1)'} rx="1" />
-              <rect x="472" y={y} width="7" height="10" fill={i % 3 === 0 ? 'rgba(255,200,100,0.3)' : 'rgba(100,180,255,0.08)'} rx="1" />
-              <rect x="485" y={y} width="7" height="10" fill={i % 4 === 0 ? 'rgba(255,200,100,0.2)' : 'rgba(100,180,255,0.1)'} rx="1" />
-            </g>
-          ))}
-
-          {/* Britam Tower */}
-          <rect x="200" y="200" width="45" height="200" fill="#0e1f2e" />
-          <polygon points="200,200 245,200 222,178" fill="#122840" />
-          {[210, 230, 250, 270, 290, 310].map((y, i) => (
-            <g key={i}>
-              <rect x="206" y={y} width="6" height="9" fill={i % 3 === 0 ? 'rgba(255,200,100,0.3)' : 'rgba(255,200,100,0.1)'} rx="1" />
-              <rect x="218" y={y} width="6" height="9" fill={i % 4 === 0 ? 'rgba(100,200,150,0.3)' : 'rgba(255,200,100,0.1)'} rx="1" />
-              <rect x="230" y={y} width="6" height="9" fill={i % 2 === 0 ? 'rgba(255,200,100,0.2)' : 'rgba(100,180,255,0.1)'} rx="1" />
-            </g>
-          ))}
-
-          {/* Smaller buildings right */}
-          <rect x="520" y="220" width="40" height="180" fill="#0d1e2c" />
-          {[228, 248, 268, 288, 308].map((y, i) => (
-            <g key={i}>
-              <rect x="526" y={y} width="6" height="9" fill={i % 3 === 0 ? 'rgba(255,200,100,0.25)' : 'rgba(255,200,100,0.08)'} rx="1" />
-              <rect x="538" y={y} width="6" height="9" fill={i % 2 === 0 ? 'rgba(100,180,255,0.2)' : 'rgba(255,200,100,0.1)'} rx="1" />
-            </g>
-          ))}
-
-          <rect x="570" y="240" width="55" height="160" fill="#0c1c28" />
-          {[248, 268, 288, 308].map((y, i) => (
-            <g key={i}>
-              <rect x="577" y={y} width="8" height="10" fill={i % 2 === 0 ? 'rgba(255,200,100,0.2)' : 'rgba(100,180,255,0.12)'} rx="1" />
-              <rect x="592" y={y} width="8" height="10" fill={i % 3 === 0 ? 'rgba(255,200,100,0.25)' : 'rgba(255,200,100,0.08)'} rx="1" />
-              <rect x="607" y={y} width="8" height="10" fill={i % 4 === 0 ? 'rgba(100,200,150,0.2)' : 'rgba(255,200,100,0.1)'} rx="1" />
-            </g>
-          ))}
-
-          {/* Far left buildings */}
-          <rect x="100" y="240" width="50" height="160" fill="#0d1d2a" />
-          <rect x="140" y="260" width="40" height="140" fill="#0c1c28" />
-          {[248, 268, 288, 308].map((y, i) => (
-            <g key={i}>
-              <rect x="107" y={y} width="7" height="9" fill={i % 3 === 0 ? 'rgba(255,200,100,0.2)' : 'rgba(100,180,255,0.1)'} rx="1" />
-              <rect x="120" y={y} width="7" height="9" fill={i % 4 === 0 ? 'rgba(255,200,100,0.25)' : 'rgba(255,200,100,0.08)'} rx="1" />
-              <rect x="133" y={y} width="7" height="9" fill={i % 2 === 0 ? 'rgba(100,200,150,0.2)' : 'rgba(255,200,100,0.1)'} rx="1" />
-            </g>
-          ))}
-
-          {/* Far right buildings */}
-          <rect x="640" y="255" width="45" height="145" fill="#0c1b26" />
-          <rect x="695" y="270" width="60" height="130" fill="#0d1d2a" />
-
-          {/* Ground / road */}
-          <rect x="0" y="395" width="800" height="30" fill="#08141d" />
-          <rect x="0" y="398" width="800" height="2" fill="rgba(29,158,117,0.15)" />
-
-          {/* Street lights glow */}
-          {[120, 220, 320, 420, 520, 620, 720].map((x, i) => (
-            <g key={i}>
-              <line x1={x} y1="395" x2={x} y2="370" stroke="#2a3a30" strokeWidth="1.5" />
-              <ellipse cx={x} cy="368" rx="12" ry="4" fill="rgba(255, 220, 100, 0.12)" />
-              <circle cx={x} cy="368" r="2" fill="rgba(255,220,100,0.6)" />
-            </g>
-          ))}
-
-          {/* Nairobi label */}
-          <text x="400" y="30" textAnchor="middle" fill="rgba(255,255,255,0.15)" fontSize="11" fontFamily="system-ui" letterSpacing="6">NAIROBI</text>
-        </svg>
-
-        {/* Overlay text */}
-        <div style={{
-          position: 'absolute', bottom: 48, left: 48, right: 48, zIndex: 10,
+          position: 'absolute', bottom: 120, left: 0, right: 0,
+          overflow: 'hidden', padding: '10px 0',
+          borderTop: '1px solid rgba(29,158,117,0.1)',
+          borderBottom: '1px solid rgba(29,158,117,0.1)',
+          background: 'rgba(6,13,26,0.6)',
+          backdropFilter: 'blur(4px)',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-            <div style={{ width: 32, height: 32, background: '#1d9e75', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: 'white', fontSize: 14 }}>N</div>
-            <span style={{ color: 'white', fontWeight: 600, fontSize: 16 }}>NyumbaVerified</span>
+          <div style={{
+            display: 'flex', gap: 40, whiteSpace: 'nowrap',
+            animation: 'marquee 20s linear infinite',
+          }}>
+            {[...CITIES, ...CITIES, ...CITIES].map((city, i) => (
+              <span key={i} style={{ color: 'rgba(29,158,117,0.7)', fontSize: 11, letterSpacing: 3, fontWeight: 500 }}>
+                {city.toUpperCase()}
+              </span>
+            ))}
           </div>
-          <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: 22, fontWeight: 700, lineHeight: 1.3, margin: '0 0 8px' }}>
-            Trusted housing<br />across Kenya 🇰🇪
+        </div>
+
+        {/* Bottom branding */}
+        <div style={{ position: 'absolute', bottom: 40, left: 48, right: 48, zIndex: 10 }}>
+          <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: 20, fontWeight: 700, margin: '0 0 6px', lineHeight: 1.3 }}>
+            Housing without borders.
           </p>
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, margin: 0 }}>
-            Verified landlords · Escrow protection · Zero fraud
+          <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, margin: 0, letterSpacing: 1 }}>
+            KENYA · NIGERIA · GHANA · SOUTH AFRICA · AND GROWING
           </p>
         </div>
+
+        {/* Top logo */}
+        <div style={{ position: 'relative', zIndex: 10, padding: '32px 40px', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{
+            width: 34, height: 34, background: '#1d9e75', borderRadius: 9,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontWeight: 800, color: 'white', fontSize: 15, letterSpacing: -1,
+          }}>N</div>
+          <span style={{ color: 'white', fontWeight: 700, fontSize: 16, letterSpacing: -0.3 }}>NyumbaVerified</span>
+          <span style={{
+            background: 'rgba(29,158,117,0.15)', border: '1px solid rgba(29,158,117,0.3)',
+            color: '#1d9e75', fontSize: 9, fontWeight: 700, padding: '2px 7px',
+            borderRadius: 20, letterSpacing: 1, marginLeft: 4,
+          }}>GLOBAL</span>
+        </div>
+
+        <style>{`
+          @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-33.33%); }
+          }
+        `}</style>
       </div>
 
-      {/* RIGHT PANEL — Login Form */}
+      {/* RIGHT PANEL */}
       <div style={{
-        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: '#0d1117', padding: '40px 32px',
+        flex: 1, display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        background: '#090f1a', padding: '48px 40px',
+        position: 'relative',
       }}>
-        <div style={{ width: '100%', maxWidth: 360 }}>
+        {/* Subtle top-right glow */}
+        <div style={{
+          position: 'absolute', top: -60, right: -60,
+          width: 300, height: 300,
+          background: 'radial-gradient(circle, rgba(29,158,117,0.06) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
 
-          <h1 style={{ color: 'white', fontSize: 26, fontWeight: 700, margin: '0 0 6px' }}>Welcome back</h1>
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, margin: '0 0 32px' }}>
-            Sign in to your NyumbaVerified account
-          </p>
+        <div style={{ width: '100%', maxWidth: 340, position: 'relative' }}>
 
+          {/* Header */}
+          <div style={{ marginBottom: 36 }}>
+            <h1 style={{
+              color: 'white', fontSize: 28, fontWeight: 700,
+              margin: '0 0 8px', letterSpacing: -0.5, lineHeight: 1.2,
+            }}>
+              Sign in
+            </h1>
+            <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 14, margin: 0 }}>
+              Good to have you back.
+            </p>
+          </div>
+
+          {/* Form */}
           <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', color: 'rgba(255,255,255,0.6)', fontSize: 13, marginBottom: 6 }}>
-                Email address
-              </label>
+            {/* Email */}
+            <div style={{ marginBottom: 14 }}>
+              <label style={{
+                display: 'block', color: 'rgba(255,255,255,0.5)',
+                fontSize: 12, fontWeight: 500, marginBottom: 7, letterSpacing: 0.3,
+              }}>EMAIL</label>
               <input
                 type="email" required
                 value={form.email}
+                placeholder="you@example.com"
                 onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                placeholder="you@email.com"
+                onFocus={() => setFocusedField('email')}
+                onBlur={() => setFocusedField(null)}
                 style={{
-                  width: '100%', padding: '12px 14px', borderRadius: 10,
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                  color: 'white', fontSize: 14, outline: 'none', boxSizing: 'border-box',
-                  transition: 'border-color 0.2s',
+                  width: '100%', padding: '13px 16px',
+                  background: focusedField === 'email' ? 'rgba(29,158,117,0.06)' : 'rgba(255,255,255,0.04)',
+                  border: `1px solid ${focusedField === 'email' ? 'rgba(29,158,117,0.5)' : 'rgba(255,255,255,0.08)'}`,
+                  borderRadius: 12, color: 'white', fontSize: 14,
+                  outline: 'none', boxSizing: 'border-box',
+                  transition: 'all 0.2s', caretColor: '#1d9e75',
                 }}
-                onFocus={e => e.target.style.borderColor = '#1d9e75'}
-                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
               />
             </div>
 
-            <div style={{ marginBottom: 24 }}>
-              <label style={{ display: 'block', color: 'rgba(255,255,255,0.6)', fontSize: 13, marginBottom: 6 }}>
-                Password
-              </label>
+            {/* Password */}
+            <div style={{ marginBottom: 8 }}>
+              <label style={{
+                display: 'block', color: 'rgba(255,255,255,0.5)',
+                fontSize: 12, fontWeight: 500, marginBottom: 7, letterSpacing: 0.3,
+              }}>PASSWORD</label>
               <input
                 type="password" required
                 value={form.password}
+                placeholder="••••••••••"
                 onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                placeholder="••••••••"
+                onFocus={() => setFocusedField('password')}
+                onBlur={() => setFocusedField(null)}
                 style={{
-                  width: '100%', padding: '12px 14px', borderRadius: 10,
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                  color: 'white', fontSize: 14, outline: 'none', boxSizing: 'border-box',
-                  transition: 'border-color 0.2s',
+                  width: '100%', padding: '13px 16px',
+                  background: focusedField === 'password' ? 'rgba(29,158,117,0.06)' : 'rgba(255,255,255,0.04)',
+                  border: `1px solid ${focusedField === 'password' ? 'rgba(29,158,117,0.5)' : 'rgba(255,255,255,0.08)'}`,
+                  borderRadius: 12, color: 'white', fontSize: 14,
+                  outline: 'none', boxSizing: 'border-box',
+                  transition: 'all 0.2s', caretColor: '#1d9e75',
                 }}
-                onFocus={e => e.target.style.borderColor = '#1d9e75'}
-                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
               />
             </div>
 
             {error && (
               <div style={{
-                background: 'rgba(220, 60, 60, 0.1)', border: '1px solid rgba(220,60,60,0.2)',
-                borderRadius: 8, padding: '10px 14px', marginBottom: 16,
-                color: '#ff8080', fontSize: 13,
-              }}>
-                {error}
-              </div>
+                background: 'rgba(220,60,60,0.08)', border: '1px solid rgba(220,60,60,0.2)',
+                borderRadius: 10, padding: '10px 14px', marginBottom: 16,
+                color: '#ff7070', fontSize: 13,
+              }}>{error}</div>
             )}
 
+            {/* Sign in button */}
             <button
               type="submit" disabled={loading}
               style={{
-                width: '100%', padding: '13px', borderRadius: 10, border: 'none',
-                background: loading ? 'rgba(29,158,117,0.5)' : '#1d9e75',
-                color: 'white', fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer',
-                transition: 'background 0.2s, transform 0.1s',
-                boxShadow: '0 4px 20px rgba(29,158,117,0.3)',
+                width: '100%', padding: '14px', marginTop: 20,
+                background: loading ? 'rgba(29,158,117,0.4)' : '#1d9e75',
+                border: 'none', borderRadius: 12,
+                color: 'white', fontSize: 15, fontWeight: 600,
+                cursor: loading ? 'not-allowed' : 'pointer',
+                letterSpacing: 0.2,
+                boxShadow: loading ? 'none' : '0 4px 24px rgba(29,158,117,0.35)',
+                transition: 'all 0.2s',
               }}
-              onMouseEnter={e => !loading && (e.target.style.background = '#178a65')}
-              onMouseLeave={e => !loading && (e.target.style.background = '#1d9e75')}
             >
-              {loading ? 'Signing in…' : 'Sign in →'}
+              {loading ? 'Signing in…' : 'Continue →'}
             </button>
           </form>
 
-          <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 13, marginTop: 24 }}>
-            Don't have an account?{' '}
-            <Link to="/signup" style={{ color: '#1d9e75', textDecoration: 'none', fontWeight: 500 }}>
-              Create one free
+          {/* Divider */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '24px 0' }}>
+            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
+            <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12 }}>or</span>
+            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
+          </div>
+
+          {/* Sign up link */}
+          <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 13, margin: 0 }}>
+            New to NyumbaVerified?{' '}
+            <Link to="/signup" style={{ color: '#1d9e75', textDecoration: 'none', fontWeight: 600 }}>
+              Create account
             </Link>
           </p>
 
-          <div style={{ marginTop: 40, paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 20 }}>
-              {['🔒 Escrow protected', '✅ Verified landlords', '🇰🇪 Made for Kenya'].map(badge => (
-                <span key={badge} style={{ color: 'rgba(255,255,255,0.2)', fontSize: 11 }}>{badge}</span>
-              ))}
-            </div>
+          {/* Trust strip */}
+          <div style={{
+            marginTop: 48, paddingTop: 24,
+            borderTop: '1px solid rgba(255,255,255,0.05)',
+            display: 'flex', gap: 16, flexWrap: 'wrap',
+          }}>
+            {[
+              { icon: '🔒', text: 'Escrow protected' },
+              { icon: '✅', text: 'ID verified' },
+              { icon: '🌍', text: 'Pan-African' },
+            ].map(item => (
+              <div key={item.text} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 13 }}>{item.icon}</span>
+                <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 11, fontWeight: 500 }}>{item.text}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
