@@ -109,7 +109,7 @@ export default function Landing() {
           </p>
 
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 36 }}>
-            <Link to="/listings" style={{ background: G, color: '#fff', fontWeight: 600, fontSize: 15, padding: '12px 28px', borderRadius: 10, textDecoration: 'none', boxShadow: `0 4px 18px rgba(29,158,117,0.3)`, letterSpacing: -0.2 }}>Browse listings →</Link>
+            <Link to="/login?from=/listings" style={{ background: G, color: '#fff', fontWeight: 600, fontSize: 15, padding: '12px 28px', borderRadius: 10, textDecoration: 'none', boxShadow: `0 4px 18px rgba(29,158,117,0.3)`, letterSpacing: -0.2 }}>Browse listings →</Link>
             <Link to="/signup" style={{ background: '#fff', color: '#222', fontWeight: 600, fontSize: 15, padding: '12px 28px', borderRadius: 10, textDecoration: 'none', border: '1px solid #e0e0e0', letterSpacing: -0.2 }}>List your property</Link>
           </div>
 
