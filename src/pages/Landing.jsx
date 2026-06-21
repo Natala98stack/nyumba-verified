@@ -6,191 +6,142 @@ function useCounter(target, duration = 2000, start = false) {
   useEffect(() => {
     if (!start) return
     let startTime = null
-    const step = (timestamp) => {
-      if (!startTime) startTime = timestamp
-      const progress = Math.min((timestamp - startTime) / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setCount(Math.floor(eased * target))
-      if (progress < 1) requestAnimationFrame(step)
+    const step = (ts) => {
+      if (!startTime) startTime = ts
+      const p = Math.min((ts - startTime) / duration, 1)
+      setCount(Math.floor((1 - Math.pow(1 - p, 3)) * target))
+      if (p < 1) requestAnimationFrame(step)
     }
     requestAnimationFrame(step)
   }, [target, duration, start])
   return count
 }
 
-function useInView(threshold = 0.2) {
+function useInView() {
   const ref = useRef(null)
   const [inView, setInView] = useState(false)
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setInView(true) },
-      { threshold }
-    )
-    if (ref.current) observer.observe(ref.current)
-    return () => observer.disconnect()
-  }, [threshold])
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true) }, { threshold: 0.2 })
+    if (ref.current) obs.observe(ref.current)
+    return () => obs.disconnect()
+  }, [])
   return [ref, inView]
 }
 
+const G = '#1d9e75'   // brand green
+const GD = '#0f6e56'  // dark green
+const GL = '#e8f5f0'  // light green tint
+
 export default function Landing() {
-  const [statsRef, statsInView] = useInView()
-  const listingsCount = useCounter(2400, 2000, statsInView)
-  const usersCount = useCounter(8500, 2200, statsInView)
-  const fraudsCount = useCounter(99, 1800, statsInView)
-  const citiesCount = useCounter(12, 1500, statsInView)
-  const [hoveredFeature, setHoveredFeature] = useState(null)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [sRef, sInView] = useInView()
+  const n1 = useCounter(2400, 2000, sInView)
+  const n2 = useCounter(8500, 2200, sInView)
+  const n3 = useCounter(99, 1800, sInView)
+  const n4 = useCounter(12, 1500, sInView)
+  const [hovered, setHovered] = useState(null)
+
+  const FEATURES = [
+    { icon: '🪪', title: 'Identity Verification', desc: 'Every landlord is verified with their national ID before listing. Know exactly who you\'re dealing with — always.', tag: 'KYC' },
+    { icon: '🔒', title: 'Escrow Payments', desc: 'Viewing fees held safely until the viewing happens. Landlord no-show? Automatic full refund.', tag: 'Protected' },
+    { icon: '⭐', title: 'Peer Reviews', desc: 'After every viewing both parties rate each other publicly. Accountability built in by design.', tag: 'Transparent' },
+    { icon: '🚨', title: 'Fraud Response', desc: 'One-click fraud reporting. Instant account suspension during investigation. Permanent bans for confirmed fraudsters.', tag: 'Enforced' },
+    { icon: '🏠', title: 'Verified Listings', desc: 'Every property reviewed before going live. Photos, location, price — all verified for accuracy.', tag: 'Curated' },
+    { icon: '🌍', title: 'Pan-African', desc: 'Built for Kenya, expanding across Africa. One trusted platform for the entire continent.', tag: 'Global' },
+  ]
+
+  const COUNTRIES = [
+    { flag: '🇰🇪', name: 'Kenya', live: true },
+    { flag: '🇳🇬', name: 'Nigeria', live: false },
+    { flag: '🇬🇭', name: 'Ghana', live: false },
+    { flag: '🇿🇦', name: 'S. Africa', live: false },
+    { flag: '🇹🇿', name: 'Tanzania', live: false },
+    { flag: '🇺🇬', name: 'Uganda', live: false },
+  ]
 
   return (
-    <div style={{ background: '#ffffff', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', color: '#111', overflowX: 'hidden' }}>
+    <div style={{ fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', color: '#111', background: '#fff', overflowX: 'hidden' }}>
 
-      {/* NAV */}
+      {/* ── NAV ── */}
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(16px)',
-        borderBottom: '1px solid rgba(0,0,0,0.06)',
-        padding: '0 32px', height: 64,
+        background: 'rgba(255,255,255,0.94)', backdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(0,0,0,0.07)',
+        padding: '0 48px', height: 62,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{
-            width: 34, height: 34, background: '#1d9e75', borderRadius: 10,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontWeight: 800, color: 'white', fontSize: 16,
-          }}>N</div>
-          <span style={{ fontWeight: 700, fontSize: 17, color: '#111', letterSpacing: -0.3 }}>NyumbaVerified</span>
-          <span style={{
-            background: '#e8f5f0', color: '#0f6e56', fontSize: 10,
-            fontWeight: 700, padding: '2px 8px', borderRadius: 20, letterSpacing: 1,
-          }}>GLOBAL</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+          <div style={{ width: 32, height: 32, background: G, borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#fff', fontSize: 15 }}>N</div>
+          <span style={{ fontWeight: 700, fontSize: 16, letterSpacing: -0.4 }}>NyumbaVerified</span>
+          <span style={{ background: GL, color: GD, fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 20, letterSpacing: 1.2, marginLeft: 2 }}>GLOBAL</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-          <a href="#features" style={{ color: '#555', fontSize: 14, textDecoration: 'none', fontWeight: 500 }}>Features</a>
-          <a href="#how" style={{ color: '#555', fontSize: 14, textDecoration: 'none', fontWeight: 500 }}>How it works</a>
-          <a href="#stats" style={{ color: '#555', fontSize: 14, textDecoration: 'none', fontWeight: 500 }}>About</a>
-          <Link to="/login" style={{ color: '#555', fontSize: 14, textDecoration: 'none', fontWeight: 500 }}>Sign in</Link>
-          <Link to="/signup" style={{
-            background: '#1d9e75', color: 'white', fontSize: 14,
-            fontWeight: 600, padding: '9px 20px', borderRadius: 10,
-            textDecoration: 'none', boxShadow: '0 2px 12px rgba(29,158,117,0.3)',
-          }}>Get started →</Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+          {['Features', 'How it works', 'Expand'].map(item => (
+            <a key={item} href={`#${item.toLowerCase().replace(/ /g, '-')}`} style={{ color: '#666', fontSize: 14, textDecoration: 'none', fontWeight: 500 }}>{item}</a>
+          ))}
+          <Link to="/login" style={{ color: '#444', fontSize: 14, textDecoration: 'none', fontWeight: 500 }}>Sign in</Link>
+          <Link to="/signup" style={{ background: G, color: '#fff', fontSize: 13, fontWeight: 600, padding: '8px 18px', borderRadius: 9, textDecoration: 'none', boxShadow: `0 2px 10px rgba(29,158,117,0.25)` }}>Get started →</Link>
         </div>
       </nav>
 
-      {/* HERO */}
-      <div style={{ paddingTop: 120, paddingBottom: 80, paddingLeft: 32, paddingRight: 32, position: 'relative', overflow: 'hidden' }}>
-        {/* Background blobs */}
-        <div style={{
-          position: 'absolute', top: 60, right: -100, width: 600, height: 600,
-          background: 'radial-gradient(circle, rgba(29,158,117,0.08) 0%, transparent 70%)',
-          borderRadius: '50%', pointerEvents: 'none',
-        }} />
-        <div style={{
-          position: 'absolute', top: 200, left: -150, width: 500, height: 500,
-          background: 'radial-gradient(circle, rgba(29,158,117,0.05) 0%, transparent 70%)',
-          borderRadius: '50%', pointerEvents: 'none',
-        }} />
+      {/* ── HERO ── */}
+      <section style={{ paddingTop: 110, paddingBottom: 0, background: 'linear-gradient(180deg, #f7fdf9 0%, #ffffff 100%)', position: 'relative', overflow: 'hidden' }}>
+        {/* Soft background mesh */}
+        <div style={{ position: 'absolute', top: -80, right: -120, width: 700, height: 700, background: 'radial-gradient(ellipse, rgba(29,158,117,0.07) 0%, transparent 65%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: 200, left: -200, width: 600, height: 400, background: 'radial-gradient(ellipse, rgba(29,158,117,0.04) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
-        <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center', position: 'relative' }}>
-          {/* Badge */}
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: '#f0faf6', border: '1px solid #c3e6d8',
-            borderRadius: 30, padding: '6px 16px', marginBottom: 32,
-          }}>
-            <span style={{ width: 7, height: 7, background: '#1d9e75', borderRadius: '50%', display: 'inline-block' }} />
-            <span style={{ color: '#0f6e56', fontSize: 13, fontWeight: 600 }}>Now live across Africa 🌍</span>
+        <div style={{ maxWidth: 860, margin: '0 auto', padding: '0 32px', textAlign: 'center', position: 'relative' }}>
+          {/* Pill badge */}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: '#fff', border: '1px solid #d4eddf', borderRadius: 30, padding: '5px 14px 5px 8px', marginBottom: 28, boxShadow: '0 1px 4px rgba(29,158,117,0.1)' }}>
+            <span style={{ background: G, borderRadius: 20, padding: '2px 8px', color: '#fff', fontSize: 10, fontWeight: 700, letterSpacing: 0.5 }}>NEW</span>
+            <span style={{ color: '#444', fontSize: 13, fontWeight: 500 }}>Now live across East Africa 🌍</span>
           </div>
 
-          {/* Headline */}
-          <h1 style={{
-            fontSize: 'clamp(42px, 6vw, 72px)', fontWeight: 800,
-            lineHeight: 1.1, letterSpacing: -2, margin: '0 0 24px',
-            color: '#0a0a0a',
-          }}>
-            Find a home you can{' '}
-            <span style={{
-              background: 'linear-gradient(135deg, #1d9e75, #0f6e56)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            }}>
+          <h1 style={{ fontSize: 'clamp(36px, 5vw, 58px)', fontWeight: 800, lineHeight: 1.12, letterSpacing: -1.5, margin: '0 0 20px', color: '#0a0a0a' }}>
+            Find a home you can<br />
+            <span style={{ backgroundImage: `linear-gradient(135deg, ${G} 0%, #0a8a60 60%, #085041 100%)`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               actually trust
             </span>
           </h1>
 
-          <p style={{
-            fontSize: 20, color: '#555', lineHeight: 1.7,
-            maxWidth: 580, margin: '0 auto 40px', fontWeight: 400,
-          }}>
-            Verified landlords. Escrow payments. Zero fraud.
-            The trusted way to find and list properties across Africa.
+          <p style={{ fontSize: 17, color: '#666', lineHeight: 1.75, maxWidth: 520, margin: '0 auto 36px', fontWeight: 400 }}>
+            Verified landlords. Escrow-protected payments. Zero fraud.
+            The trusted housing platform built for Africa — and the world.
           </p>
 
-          {/* CTAs */}
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 48 }}>
-            <Link to="/listings" style={{
-              background: '#1d9e75', color: 'white', fontWeight: 700,
-              fontSize: 16, padding: '14px 32px', borderRadius: 12,
-              textDecoration: 'none', boxShadow: '0 4px 20px rgba(29,158,117,0.3)',
-              transition: 'transform 0.2s',
-            }}>
-              Browse listings →
-            </Link>
-            <Link to="/signup" style={{
-              background: 'white', color: '#111', fontWeight: 600,
-              fontSize: 16, padding: '14px 32px', borderRadius: 12,
-              textDecoration: 'none', border: '1.5px solid #e5e5e5',
-            }}>
-              List your property
-            </Link>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 36 }}>
+            <Link to="/listings" style={{ background: G, color: '#fff', fontWeight: 600, fontSize: 15, padding: '12px 28px', borderRadius: 10, textDecoration: 'none', boxShadow: `0 4px 18px rgba(29,158,117,0.3)`, letterSpacing: -0.2 }}>Browse listings →</Link>
+            <Link to="/signup" style={{ background: '#fff', color: '#222', fontWeight: 600, fontSize: 15, padding: '12px 28px', borderRadius: 10, textDecoration: 'none', border: '1px solid #e0e0e0', letterSpacing: -0.2 }}>List your property</Link>
           </div>
 
-          {/* Trust row */}
-          <div style={{ display: 'flex', gap: 28, justifyContent: 'center', flexWrap: 'wrap' }}>
-            {[
-              '✅ ID-verified landlords',
-              '🔒 Escrow-protected payments',
-              '⭐ Rated & reviewed',
-              '🌍 Pan-African platform',
-            ].map(item => (
-              <span key={item} style={{ color: '#888', fontSize: 13, fontWeight: 500 }}>{item}</span>
+          {/* Micro trust badges */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 24, flexWrap: 'wrap', marginBottom: 56 }}>
+            {['✅ ID-verified landlords', '🔒 Escrow-protected', '⭐ Rated & reviewed', '🌍 Pan-African'].map(b => (
+              <span key={b} style={{ color: '#999', fontSize: 12, fontWeight: 500 }}>{b}</span>
             ))}
           </div>
-        </div>
 
-        {/* Hero cards preview */}
-        <div style={{ maxWidth: 900, margin: '64px auto 0', position: 'relative' }}>
-          <div style={{
-            background: 'white', borderRadius: 20, overflow: 'hidden',
-            border: '1px solid #e8e8e8', boxShadow: '0 20px 60px rgba(0,0,0,0.08)',
-          }}>
-            {/* Fake browser bar */}
-            <div style={{ background: '#f5f5f5', borderBottom: '1px solid #eee', padding: '12px 16px', display: 'flex', gap: 6, alignItems: 'center' }}>
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f56' }} />
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ffbd2e' }} />
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#27c93f' }} />
-              <div style={{ flex: 1, background: 'white', borderRadius: 6, padding: '4px 12px', marginLeft: 8, fontSize: 11, color: '#999' }}>
-                nyumba-verified.vercel.app/listings
-              </div>
+          {/* Product screenshot */}
+          <div style={{ background: '#fff', borderRadius: '16px 16px 0 0', border: '1px solid #eee', borderBottom: 'none', boxShadow: '0 -4px 40px rgba(0,0,0,0.06)', overflow: 'hidden', maxWidth: 780, margin: '0 auto' }}>
+            {/* Browser chrome */}
+            <div style={{ background: '#f5f5f5', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 6, borderBottom: '1px solid #e8e8e8' }}>
+              {['#ff5f56','#ffbd2e','#27c93f'].map(c => <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />)}
+              <div style={{ flex: 1, background: '#fff', borderRadius: 5, padding: '3px 12px', marginLeft: 8, fontSize: 11, color: '#bbb', textAlign: 'left' }}>nyumba-verified.vercel.app</div>
             </div>
-            {/* Fake listings grid */}
-            <div style={{ padding: 24, background: '#fafafa', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+            {/* Listings preview */}
+            <div style={{ background: '#fafafa', padding: '20px', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
               {[
-                { title: 'Modern 2BR in Kilimani', location: 'Nairobi, Kenya', price: 'KSh 35,000', type: 'Rental', color: '#e8f5f0' },
-                { title: 'Luxury BnB Westlands', location: 'Nairobi, Kenya', price: 'KSh 8,500', type: 'BnB', color: '#f0f0ff' },
-                { title: 'Spacious Studio VI', location: 'Lagos, Nigeria', price: '₦ 180,000', type: 'Rental', color: '#fff5e8' },
-              ].map((card, i) => (
-                <div key={i} style={{ background: 'white', borderRadius: 12, overflow: 'hidden', border: '1px solid #eee', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                  <div style={{ height: 80, background: card.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>🏠</div>
-                  <div style={{ padding: 12 }}>
-                    <p style={{ margin: '0 0 3px', fontWeight: 600, fontSize: 12, color: '#111' }}>{card.title}</p>
-                    <p style={{ margin: '0 0 8px', fontSize: 11, color: '#888' }}>📍 {card.location}</p>
+                { title: '2BR apartment, Kilimani', loc: 'Nairobi, Kenya', price: 'KSh 35,000/mo', emoji: '🏢', bg: '#f0faf6', verified: true },
+                { title: 'Luxury BnB, Westlands', loc: 'Nairobi, Kenya', price: 'KSh 8,500/night', emoji: '🛎️', bg: '#f5f0ff', verified: true },
+                { title: 'Modern studio, VI', loc: 'Lagos, Nigeria', price: '₦ 185,000/mo', emoji: '🏠', bg: '#fff8f0', verified: false },
+              ].map((c, i) => (
+                <div key={i} style={{ background: '#fff', borderRadius: 10, overflow: 'hidden', border: '1px solid #eee' }}>
+                  <div style={{ height: 72, background: c.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>{c.emoji}</div>
+                  <div style={{ padding: '10px 12px' }}>
+                    <p style={{ margin: '0 0 2px', fontWeight: 600, fontSize: 11, color: '#111', lineHeight: 1.3 }}>{c.title}</p>
+                    <p style={{ margin: '0 0 6px', fontSize: 10, color: '#999' }}>📍 {c.loc}</p>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ color: '#1d9e75', fontWeight: 700, fontSize: 13 }}>{card.price}</span>
-                      <span style={{ background: '#f0faf6', color: '#0f6e56', fontSize: 10, padding: '2px 7px', borderRadius: 10, fontWeight: 600 }}>{card.type}</span>
-                    </div>
-                    <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <div style={{ width: 14, height: 14, background: '#e8f5f0', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8 }}>✅</div>
-                      <span style={{ fontSize: 10, color: '#1d9e75', fontWeight: 500 }}>Verified landlord</span>
+                      <span style={{ color: G, fontWeight: 700, fontSize: 11 }}>{c.price}</span>
+                      {c.verified && <span style={{ fontSize: 9, color: GD, background: GL, padding: '1px 5px', borderRadius: 8, fontWeight: 600 }}>✓ Verified</span>}
                     </div>
                   </div>
                 </div>
@@ -198,257 +149,228 @@ export default function Landing() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* STATS */}
-      <div ref={statsRef} id="stats" style={{
-        background: '#0a0f0d', padding: '72px 32px',
-      }}>
-        <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 32 }}>
-          {[
-            { value: listingsCount.toLocaleString() + '+', label: 'Verified listings', sub: 'Across Africa' },
-            { value: usersCount.toLocaleString() + '+', label: 'Registered users', sub: 'And growing fast' },
-            { value: fraudsCount + '%', label: 'Fraud prevention', sub: 'Rate guaranteed' },
-            { value: citiesCount + '+', label: 'Cities covered', sub: 'More coming soon' },
-          ].map(stat => (
-            <div key={stat.label} style={{ textAlign: 'center' }}>
-              <p style={{ fontSize: 42, fontWeight: 800, color: '#1d9e75', margin: '0 0 6px', letterSpacing: -1 }}>{stat.value}</p>
-              <p style={{ fontSize: 15, fontWeight: 600, color: 'white', margin: '0 0 4px' }}>{stat.label}</p>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', margin: 0 }}>{stat.sub}</p>
-            </div>
+      {/* ── MARQUEE STRIP ── */}
+      <div style={{ background: GL, borderTop: '1px solid #d4eddf', borderBottom: '1px solid #d4eddf', padding: '12px 0', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', gap: 48, whiteSpace: 'nowrap', animation: 'slide 25s linear infinite' }}>
+          {[...Array(4)].flatMap(() => ['🇰🇪 Nairobi', '🇳🇬 Lagos', '🇬🇭 Accra', '🇿🇦 Johannesburg', '🇹🇿 Dar es Salaam', '🇺🇬 Kampala', '🇰🇪 Mombasa', '🇳🇬 Abuja', '🌍 And growing']).map((c, i) => (
+            <span key={i} style={{ color: GD, fontSize: 12, fontWeight: 600, letterSpacing: 0.5 }}>{c}</span>
           ))}
         </div>
+        <style>{`@keyframes slide { 0% { transform: translateX(0); } 100% { transform: translateX(-25%); } }`}</style>
       </div>
 
-      {/* PROBLEM */}
-      <div style={{ padding: '96px 32px', background: '#fff' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <span style={{ background: '#fff0f0', color: '#c0392b', fontSize: 12, fontWeight: 700, padding: '4px 14px', borderRadius: 20, letterSpacing: 1 }}>THE PROBLEM</span>
-            <h2 style={{ fontSize: 42, fontWeight: 800, letterSpacing: -1, color: '#0a0a0a', margin: '16px 0 12px' }}>
-              House hunting is broken
-            </h2>
-            <p style={{ color: '#666', fontSize: 17, maxWidth: 520, margin: '0 auto' }}>Millions of Africans lose money to fake agents every year. We built NyumbaVerified to fix this — permanently.</p>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+      {/* ── STATS ── */}
+      <section ref={sRef} id="stats" style={{ padding: '80px 48px', background: '#fff' }}>
+        <div style={{ maxWidth: 860, margin: '0 auto' }}>
+          <p style={{ textAlign: 'center', color: '#999', fontSize: 12, fontWeight: 600, letterSpacing: 2, marginBottom: 48, textTransform: 'uppercase' }}>Platform at a glance</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 2 }}>
             {[
-              { icon: '😤', title: 'Fake agents', desc: 'You pay a viewing fee. They take the money and vanish. You have no way to get it back.', color: '#fff5f5', border: '#fdd' },
-              { icon: '😰', title: 'No accountability', desc: 'Fraudsters open new accounts and keep scamming new victims. Nobody stops them.', color: '#fff9f0', border: '#fde' },
-              { icon: '😓', title: 'Zero protection', desc: 'Once you pay, the money is gone. No escrow, no verification, no safety net.', color: '#fff5f5', border: '#fdd' },
-            ].map(item => (
-              <div key={item.title} style={{
-                background: item.color, border: `1px solid ${item.border}`,
-                borderRadius: 16, padding: 28,
-              }}>
-                <p style={{ fontSize: 40, margin: '0 0 16px' }}>{item.icon}</p>
-                <p style={{ fontWeight: 700, fontSize: 18, color: '#111', margin: '0 0 8px' }}>{item.title}</p>
-                <p style={{ color: '#666', fontSize: 14, lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
+              { val: n1.toLocaleString() + '+', label: 'Verified listings', sub: 'Active on platform' },
+              { val: n2.toLocaleString() + '+', label: 'Registered users', sub: 'Across Africa' },
+              { val: n3 + '%', label: 'Fraud prevention', sub: 'Success rate' },
+              { val: n4 + '+', label: 'Cities covered', sub: 'And expanding' },
+            ].map((s, i) => (
+              <div key={i} style={{ textAlign: 'center', padding: '32px 16px', borderRight: i < 3 ? '1px solid #f0f0f0' : 'none' }}>
+                <p style={{ fontSize: 40, fontWeight: 800, color: G, margin: '0 0 6px', letterSpacing: -1.5 }}>{s.val}</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: '#111', margin: '0 0 3px' }}>{s.label}</p>
+                <p style={{ fontSize: 12, color: '#aaa', margin: 0 }}>{s.sub}</p>
               </div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* FEATURES */}
-      <div id="features" style={{ padding: '96px 32px', background: '#f8fffe' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <span style={{ background: '#e8f5f0', color: '#0f6e56', fontSize: 12, fontWeight: 700, padding: '4px 14px', borderRadius: 20, letterSpacing: 1 }}>THE SOLUTION</span>
-            <h2 style={{ fontSize: 42, fontWeight: 800, letterSpacing: -1, color: '#0a0a0a', margin: '16px 0 12px' }}>Four layers of protection</h2>
-            <p style={{ color: '#666', fontSize: 17, maxWidth: 480, margin: '0 auto' }}>Everything we built points to one goal — making housing safe for everyone.</p>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }}>
-            {[
-              { icon: '🪪', title: 'Verified Identities', desc: 'Every landlord uploads their national ID before listing anything. You always know exactly who you\'re dealing with — no anonymous agents, no ghost listings.', tag: 'KYC Verified', tagColor: '#e8f5f0', tagText: '#0f6e56' },
-              { icon: '🔒', title: 'Escrow Payments', desc: 'Your viewing fee is held safely in escrow until the viewing is confirmed. If the landlord disappears — automatic full refund. Every time.', tag: 'Zero risk', tagColor: '#eef3ff', tagText: '#3b5bdb' },
-              { icon: '⭐', title: 'Ratings & Reviews', desc: 'After every viewing, both sides rate each other publicly. Bad actors are exposed quickly. Good landlords rise to the top and get more bookings.', tag: 'Peer rated', tagColor: '#fff8e1', tagText: '#b7791f' },
-              { icon: '🚨', title: 'Fraud Reporting', desc: 'One click to report a suspicious agent. Their account is suspended immediately while we investigate. Confirmed fraudsters are permanently banned.', tag: 'Instant action', tagColor: '#fff0f0', tagText: '#c0392b' },
-            ].map((f, i) => (
-              <div key={f.title}
-                onMouseEnter={() => setHoveredFeature(i)}
-                onMouseLeave={() => setHoveredFeature(null)}
-                style={{
-                  background: hoveredFeature === i ? 'white' : 'white',
-                  border: `1.5px solid ${hoveredFeature === i ? '#1d9e75' : '#eee'}`,
-                  borderRadius: 20, padding: 32,
-                  transition: 'all 0.2s',
-                  boxShadow: hoveredFeature === i ? '0 8px 32px rgba(29,158,117,0.12)' : '0 2px 8px rgba(0,0,0,0.04)',
-                  cursor: 'default',
-                }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-                  <span style={{ fontSize: 36 }}>{f.icon}</span>
-                  <span style={{ background: f.tagColor, color: f.tagText, fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 20 }}>{f.tag}</span>
+      {/* ── DIVIDER ── */}
+      <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, #e8e8e8 20%, #e8e8e8 80%, transparent)', margin: '0 48px' }} />
+
+      {/* ── PROBLEM ── */}
+      <section style={{ padding: '88px 48px', background: '#fff' }}>
+        <div style={{ maxWidth: 860, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
+            <div>
+              <p style={{ color: '#c0392b', fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 14 }}>The Problem</p>
+              <h2 style={{ fontSize: 32, fontWeight: 800, lineHeight: 1.2, letterSpacing: -0.8, color: '#0a0a0a', margin: '0 0 18px' }}>
+                House hunting in Africa is broken
+              </h2>
+              <p style={{ color: '#666', fontSize: 15, lineHeight: 1.8, marginBottom: 28 }}>
+                Millions of Africans lose money to fake agents every year. You pay a viewing fee, they disappear. No recourse. No protection. No accountability.
+              </p>
+              <p style={{ color: '#666', fontSize: 15, lineHeight: 1.8, marginBottom: 0 }}>
+                We built NyumbaVerified to permanently fix this — with verified identities, escrow payments, and a trust layer that makes fraud nearly impossible.
+              </p>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {[
+                { icon: '😤', title: 'Fake agents', desc: 'Pay a viewing fee. They vanish. No way to get it back.' },
+                { icon: '😰', title: 'No accountability', desc: 'Fraudsters create new accounts and keep scamming people.' },
+                { icon: '😓', title: 'No protection', desc: 'No escrow, no verification, no safety net of any kind.' },
+              ].map(item => (
+                <div key={item.title} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', padding: '18px 20px', background: '#fff9f9', borderRadius: 12, border: '1px solid #fde8e8' }}>
+                  <span style={{ fontSize: 24, flexShrink: 0 }}>{item.icon}</span>
+                  <div>
+                    <p style={{ fontWeight: 700, fontSize: 14, color: '#111', margin: '0 0 4px' }}>{item.title}</p>
+                    <p style={{ color: '#888', fontSize: 13, margin: 0, lineHeight: 1.5 }}>{item.desc}</p>
+                  </div>
                 </div>
-                <h3 style={{ fontWeight: 700, fontSize: 20, color: '#111', margin: '0 0 10px' }}>{f.title}</h3>
-                <p style={{ color: '#666', fontSize: 14, lineHeight: 1.7, margin: 0 }}>{f.desc}</p>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FEATURES ── */}
+      <section id="features" style={{ padding: '88px 48px', background: '#f8fffe' }}>
+        <div style={{ maxWidth: 860, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 52 }}>
+            <p style={{ color: GD, fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 12 }}>Why NyumbaVerified</p>
+            <h2 style={{ fontSize: 32, fontWeight: 800, letterSpacing: -0.8, color: '#0a0a0a', margin: '0 0 12px' }}>Everything you need to trust the process</h2>
+            <p style={{ color: '#777', fontSize: 15, maxWidth: 460, margin: '0 auto' }}>Six pillars that make NyumbaVerified the most trusted housing platform in Africa.</p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
+            {FEATURES.map((f, i) => (
+              <div key={f.title}
+                onMouseEnter={() => setHovered(i)}
+                onMouseLeave={() => setHovered(null)}
+                style={{
+                  background: '#fff', borderRadius: 14, padding: '24px 22px',
+                  border: `1px solid ${hovered === i ? '#c3e6d8' : '#ececec'}`,
+                  boxShadow: hovered === i ? '0 6px 24px rgba(29,158,117,0.1)' : '0 1px 4px rgba(0,0,0,0.03)',
+                  transition: 'all 0.2s', cursor: 'default',
+                }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+                  <span style={{ fontSize: 28 }}>{f.icon}</span>
+                  <span style={{ background: GL, color: GD, fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 20, letterSpacing: 0.5 }}>{f.tag}</span>
+                </div>
+                <h3 style={{ fontWeight: 700, fontSize: 15, color: '#111', margin: '0 0 8px', letterSpacing: -0.3 }}>{f.title}</h3>
+                <p style={{ color: '#777', fontSize: 13, lineHeight: 1.65, margin: 0 }}>{f.desc}</p>
               </div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* HOW IT WORKS */}
-      <div id="how" style={{ padding: '96px 32px', background: 'white' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <span style={{ background: '#e8f5f0', color: '#0f6e56', fontSize: 12, fontWeight: 700, padding: '4px 14px', borderRadius: 20, letterSpacing: 1 }}>PROCESS</span>
-            <h2 style={{ fontSize: 42, fontWeight: 800, letterSpacing: -1, color: '#0a0a0a', margin: '16px 0 12px' }}>Up and running in minutes</h2>
+      {/* ── HOW IT WORKS ── */}
+      <section id="how-it-works" style={{ padding: '88px 48px', background: '#fff' }}>
+        <div style={{ maxWidth: 860, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 52 }}>
+            <p style={{ color: GD, fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 12 }}>Process</p>
+            <h2 style={{ fontSize: 32, fontWeight: 800, letterSpacing: -0.8, color: '#0a0a0a', margin: '0 0 12px' }}>Up and running in minutes</h2>
+            <p style={{ color: '#777', fontSize: 15, maxWidth: 400, margin: '0 auto' }}>Four simple steps to find or list your property safely.</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
             {[
               { n: '01', title: 'Create account', desc: 'Sign up as tenant, landlord, or BnB host in under 2 minutes.' },
               { n: '02', title: 'Verify identity', desc: 'Upload your national ID. This protects everyone on the platform.' },
               { n: '03', title: 'Find or list', desc: 'Browse verified listings or post your property for review.' },
-              { n: '04', title: 'Book safely', desc: 'Pay into escrow. Released only when viewing is confirmed.' },
-            ].map((step, i) => (
-              <div key={step.n} style={{ position: 'relative' }}>
-                {i < 3 && (
-                  <div style={{
-                    position: 'absolute', top: 20, left: '60%', right: '-40%',
-                    height: 2,
-                    background: 'linear-gradient(90deg, #1d9e75, #e8f5f0)',
-                    zIndex: 0,
-                  }} />
-                )}
-                <div style={{
-                  background: '#f8fffe', border: '1.5px solid #e8f5f0',
-                  borderRadius: 16, padding: 24, position: 'relative', zIndex: 1,
-                }}>
-                  <div style={{
-                    width: 40, height: 40, background: '#1d9e75', borderRadius: 12,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontWeight: 800, color: 'white', fontSize: 14, marginBottom: 16,
-                  }}>{step.n}</div>
-                  <h3 style={{ fontWeight: 700, fontSize: 15, color: '#111', margin: '0 0 8px' }}>{step.title}</h3>
-                  <p style={{ color: '#777', fontSize: 13, lineHeight: 1.6, margin: 0 }}>{step.desc}</p>
-                </div>
+              { n: '04', title: 'Book safely', desc: 'Pay into escrow — released only when the viewing is confirmed.' },
+            ].map((s, i) => (
+              <div key={s.n} style={{ padding: '22px 18px', background: '#f8fffe', borderRadius: 14, border: '1px solid #e8f5f0', position: 'relative' }}>
+                <p style={{ fontSize: 28, fontWeight: 800, color: G, margin: '0 0 14px', letterSpacing: -1 }}>{s.n}</p>
+                <h3 style={{ fontWeight: 700, fontSize: 14, color: '#111', margin: '0 0 8px', letterSpacing: -0.2 }}>{s.title}</h3>
+                <p style={{ color: '#888', fontSize: 13, lineHeight: 1.6, margin: 0 }}>{s.desc}</p>
               </div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* FOR LANDLORDS */}
-      <div style={{ padding: '96px 32px', background: '#f8fffe' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
+      {/* ── FOR LANDLORDS ── */}
+      <section style={{ padding: '88px 48px', background: 'linear-gradient(135deg, #f7fdf9 0%, #edfaf3 100%)' }}>
+        <div style={{ maxWidth: 860, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
           <div>
-            <span style={{ background: '#e8f5f0', color: '#0f6e56', fontSize: 12, fontWeight: 700, padding: '4px 14px', borderRadius: 20, letterSpacing: 1 }}>FOR LANDLORDS</span>
-            <h2 style={{ fontSize: 38, fontWeight: 800, letterSpacing: -1, color: '#0a0a0a', margin: '16px 0 12px', lineHeight: 1.2 }}>
-              List once.<br />Rent smarter.
-            </h2>
-            <p style={{ color: '#666', fontSize: 16, lineHeight: 1.7, marginBottom: 24 }}>
-              Post your property, attract serious verified tenants, and get paid safely — all in one place.
-            </p>
-            {[
-              'Free to list — no upfront costs',
-              'Only verified, serious tenants',
-              'Viewing fees ensure tenant commitment',
-              'Build your reputation with reviews',
-              'Manage everything from your dashboard',
-            ].map(item => (
-              <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                <div style={{ width: 20, height: 20, background: '#e8f5f0', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, flexShrink: 0 }}>✅</div>
-                <span style={{ color: '#444', fontSize: 14, fontWeight: 500 }}>{item}</span>
+            <p style={{ color: GD, fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 14 }}>For landlords</p>
+            <h2 style={{ fontSize: 32, fontWeight: 800, letterSpacing: -0.8, color: '#0a0a0a', margin: '0 0 14px', lineHeight: 1.2 }}>List once.<br />Attract serious tenants.</h2>
+            <p style={{ color: '#666', fontSize: 15, lineHeight: 1.8, marginBottom: 22 }}>Post your property and get matched with verified, committed tenants — not time-wasters.</p>
+            {['Free to list — no upfront costs', 'Only verified, serious tenants', 'Viewing fees ensure commitment', 'Build your reputation with reviews', 'Full dashboard to manage bookings'].map(item => (
+              <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 9 }}>
+                <div style={{ width: 18, height: 18, background: G, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 10, flexShrink: 0 }}>✓</div>
+                <span style={{ color: '#444', fontSize: 14 }}>{item}</span>
               </div>
             ))}
-            <Link to="/signup" style={{
-              display: 'inline-block', marginTop: 24,
-              background: '#1d9e75', color: 'white', fontWeight: 700,
-              fontSize: 15, padding: '13px 28px', borderRadius: 12,
-              textDecoration: 'none', boxShadow: '0 4px 16px rgba(29,158,117,0.3)',
-            }}>
-              List your property →
-            </Link>
+            <Link to="/signup" style={{ display: 'inline-block', marginTop: 24, background: G, color: '#fff', fontWeight: 600, fontSize: 14, padding: '11px 24px', borderRadius: 9, textDecoration: 'none', boxShadow: `0 3px 14px rgba(29,158,117,0.3)` }}>List your property →</Link>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             {[
-              { icon: '🏠', title: 'Long-term rentals', desc: 'Houses & apartments', bg: '#f0faf6' },
-              { icon: '🛎️', title: 'BnB & Staycation', desc: 'Short-stay units', bg: '#f5f0ff' },
-              { icon: '📸', title: 'Photo listings', desc: 'Showcase beautifully', bg: '#fff8f0' },
-              { icon: '📊', title: 'Analytics', desc: 'Track your bookings', bg: '#f0f8ff' },
-            ].map(card => (
-              <div key={card.title} style={{
-                background: card.bg, borderRadius: 14, padding: '20px 16px',
-                border: '1px solid rgba(0,0,0,0.04)',
-              }}>
-                <p style={{ fontSize: 28, margin: '0 0 10px' }}>{card.icon}</p>
-                <p style={{ fontWeight: 700, fontSize: 14, color: '#111', margin: '0 0 4px' }}>{card.title}</p>
-                <p style={{ color: '#888', fontSize: 12, margin: 0 }}>{card.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* GLOBAL EXPANSION */}
-      <div style={{ padding: '96px 32px', background: 'white' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
-          <span style={{ background: '#e8f5f0', color: '#0f6e56', fontSize: 12, fontWeight: 700, padding: '4px 14px', borderRadius: 20, letterSpacing: 1 }}>EXPANSION</span>
-          <h2 style={{ fontSize: 42, fontWeight: 800, letterSpacing: -1, color: '#0a0a0a', margin: '16px 0 12px' }}>
-            Starting in Kenya.<br />Built for Africa.
-          </h2>
-          <p style={{ color: '#666', fontSize: 17, maxWidth: 520, margin: '0 auto 48px' }}>
-            Our mission is to make housing trustworthy across the entire continent — and beyond.
-          </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
-            {[
-              { flag: '🇰🇪', country: 'Kenya', status: 'Live', bg: '#e8f5f0', color: '#0f6e56' },
-              { flag: '🇳🇬', country: 'Nigeria', status: 'Coming soon', bg: '#fff8e1', color: '#b7791f' },
-              { flag: '🇬🇭', country: 'Ghana', status: 'Coming soon', bg: '#fff8e1', color: '#b7791f' },
-              { flag: '🇿🇦', country: 'South Africa', status: 'Coming soon', bg: '#fff8e1', color: '#b7791f' },
-              { flag: '🇹🇿', country: 'Tanzania', status: 'Coming soon', bg: '#fff8e1', color: '#b7791f' },
-              { flag: '🇺🇬', country: 'Uganda', status: 'Coming soon', bg: '#fff8e1', color: '#b7791f' },
+              { icon: '🏠', t: 'Long-term rentals', d: 'Houses & apartments', bg: '#f0faf6' },
+              { icon: '🛎️', t: 'BnB & Staycation', d: 'Short-stay units', bg: '#f5f0ff' },
+              { icon: '📸', t: 'Rich listings', d: 'Photos & details', bg: '#fff8f0' },
+              { icon: '📊', t: 'Booking analytics', d: 'Track everything', bg: '#f0f8ff' },
             ].map(c => (
-              <div key={c.country} style={{
-                background: c.bg, borderRadius: 14, padding: '16px 20px',
-                textAlign: 'center', minWidth: 120, border: '1px solid rgba(0,0,0,0.05)',
-              }}>
-                <p style={{ fontSize: 32, margin: '0 0 6px' }}>{c.flag}</p>
-                <p style={{ fontWeight: 700, fontSize: 14, color: '#111', margin: '0 0 4px' }}>{c.country}</p>
-                <span style={{ background: c.bg, color: c.color, fontSize: 10, fontWeight: 700 }}>{c.status}</span>
+              <div key={c.t} style={{ background: c.bg, borderRadius: 12, padding: '18px 14px', border: '1px solid rgba(0,0,0,0.04)' }}>
+                <p style={{ fontSize: 26, margin: '0 0 8px' }}>{c.icon}</p>
+                <p style={{ fontWeight: 700, fontSize: 13, color: '#111', margin: '0 0 3px' }}>{c.t}</p>
+                <p style={{ color: '#999', fontSize: 12, margin: 0 }}>{c.d}</p>
               </div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* CTA */}
-      <div style={{ padding: '96px 32px', background: '#0a0f0d' }}>
-        <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: 48, fontWeight: 800, color: 'white', letterSpacing: -1.5, margin: '0 0 16px', lineHeight: 1.15 }}>
-            Ready to find your<br />
-            <span style={{ color: '#1d9e75' }}>next home safely?</span>
-          </h2>
-          <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 17, marginBottom: 40 }}>
-            Join thousands of Kenyans who house hunt without fear of being scammed.
-          </p>
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/signup" style={{
-              background: '#1d9e75', color: 'white', fontWeight: 700,
-              fontSize: 16, padding: '16px 36px', borderRadius: 12,
-              textDecoration: 'none', boxShadow: '0 4px 24px rgba(29,158,117,0.4)',
-            }}>
-              Create free account →
-            </Link>
-            <Link to="/listings" style={{
-              background: 'rgba(255,255,255,0.07)', color: 'white', fontWeight: 600,
-              fontSize: 16, padding: '16px 36px', borderRadius: 12,
-              textDecoration: 'none', border: '1px solid rgba(255,255,255,0.1)',
-            }}>
-              Browse listings
-            </Link>
+      {/* ── EXPANSION ── */}
+      <section id="expand" style={{ padding: '88px 48px', background: '#fff' }}>
+        <div style={{ maxWidth: 860, margin: '0 auto', textAlign: 'center' }}>
+          <p style={{ color: GD, fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 12 }}>Expansion</p>
+          <h2 style={{ fontSize: 32, fontWeight: 800, letterSpacing: -0.8, color: '#0a0a0a', margin: '0 0 12px' }}>Starting in Kenya. Built for Africa.</h2>
+          <p style={{ color: '#777', fontSize: 15, maxWidth: 460, margin: '0 auto 44px' }}>Our mission is to make housing trustworthy across every African city — and then the world.</p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+            {COUNTRIES.map(c => (
+              <div key={c.name} style={{
+                background: c.live ? GL : '#fafafa',
+                border: `1px solid ${c.live ? '#c3e6d8' : '#ebebeb'}`,
+                borderRadius: 12, padding: '14px 18px', textAlign: 'center', minWidth: 100,
+              }}>
+                <p style={{ fontSize: 28, margin: '0 0 6px' }}>{c.flag}</p>
+                <p style={{ fontWeight: 700, fontSize: 13, color: '#111', margin: '0 0 4px' }}>{c.name}</p>
+                <span style={{ fontSize: 10, fontWeight: 700, color: c.live ? GD : '#bbb', letterSpacing: 0.5 }}>{c.live ? '● LIVE' : '○ SOON'}</span>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* FOOTER */}
-      <div style={{ background: '#080c0a', borderTop: '1px solid rgba(255,255,255,0.04)', padding: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 28, height: 28, background: '#1d9e75', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: 'white', fontSize: 13 }}>N</div>
-          <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>NyumbaVerified — Trusted housing for Africa</span>
+      {/* ── TESTIMONIAL ── */}
+      <section style={{ padding: '80px 48px', background: '#f8fffe' }}>
+        <div style={{ maxWidth: 600, margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ fontSize: 32, marginBottom: 20, color: G }}>❝</div>
+          <p style={{ fontSize: 18, color: '#222', lineHeight: 1.7, fontWeight: 500, margin: '0 0 20px', fontStyle: 'italic' }}>
+            "I paid KSh 1,500 to an agent who disappeared the same day. NyumbaVerified would have protected me — the escrow system is exactly what this market needs."
+          </p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+            <div style={{ width: 36, height: 36, background: GL, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: GD, fontSize: 14 }}>B</div>
+            <div style={{ textAlign: 'left' }}>
+              <p style={{ fontWeight: 600, fontSize: 13, color: '#111', margin: 0 }}>Beryl W.</p>
+              <p style={{ fontSize: 12, color: '#999', margin: 0 }}>Tenant, Nairobi</p>
+            </div>
+          </div>
         </div>
-        <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12, margin: 0 }}>© 2026 · Zero fraud. Zero compromise.</p>
-      </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section style={{ padding: '88px 48px', background: '#0a0f0d', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 600, height: 400, background: 'radial-gradient(ellipse, rgba(29,158,117,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ maxWidth: 600, margin: '0 auto', textAlign: 'center', position: 'relative' }}>
+          <p style={{ color: 'rgba(29,158,117,0.8)', fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 16 }}>Get started today</p>
+          <h2 style={{ fontSize: 36, fontWeight: 800, color: '#fff', letterSpacing: -1, margin: '0 0 14px', lineHeight: 1.2 }}>
+            Ready to find your<br />next home safely?
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, marginBottom: 36 }}>Join thousands of Africans who trust NyumbaVerified to find safe, verified homes.</p>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link to="/signup" style={{ background: G, color: '#fff', fontWeight: 700, fontSize: 15, padding: '13px 30px', borderRadius: 10, textDecoration: 'none', boxShadow: '0 4px 20px rgba(29,158,117,0.4)' }}>Create free account →</Link>
+            <Link to="/listings" style={{ background: 'rgba(255,255,255,0.07)', color: '#fff', fontWeight: 500, fontSize: 15, padding: '13px 30px', borderRadius: 10, textDecoration: 'none', border: '1px solid rgba(255,255,255,0.1)' }}>Browse listings</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer style={{ background: '#080c0a', borderTop: '1px solid rgba(255,255,255,0.05)', padding: '28px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+          <div style={{ width: 26, height: 26, background: G, borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#fff', fontSize: 12 }}>N</div>
+          <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>NyumbaVerified — Trusted housing for Africa</span>
+        </div>
+        <p style={{ color: 'rgba(255,255,255,0.18)', fontSize: 12, margin: 0 }}>© 2026 · Zero fraud. Zero compromise.</p>
+      </footer>
     </div>
   )
 }
