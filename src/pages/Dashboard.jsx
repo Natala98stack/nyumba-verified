@@ -1,14 +1,23 @@
 import { useAuth } from '../hooks/useAuth'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 
 const KYC_BADGE = {
   pending:  { label: 'ID not verified', color: 'bg-yellow-100 text-yellow-800' },
-  verified: { label: 'Verified', color: 'bg-green-100 text-green-800' },
+  verified: { label: 'Verified',        color: 'bg-green-100 text-green-800'  },
   rejected: { label: 'Verification failed', color: 'bg-red-100 text-red-800' },
 }
 
 export default function Dashboard() {
   const { profile, signOut } = useAuth()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (profile?.role === 'admin') {
+      navigate('/admin')
+    }
+  }, [profile])
+
   if (!profile) return <div className="p-8 text-gray-400">Loading…</div>
 
   const kyc = KYC_BADGE[profile.kyc_status] || KYC_BADGE.pending
