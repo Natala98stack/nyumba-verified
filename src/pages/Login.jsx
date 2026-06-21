@@ -9,9 +9,8 @@ export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [focusedField, setFocusedField] = useState(null)
+  const [focused, setFocused] = useState(null)
 
-  // Get the page they were trying to visit before being redirected to login
   const from = new URLSearchParams(location.search).get('from') || '/dashboard'
 
   async function handleSubmit(e) {
@@ -30,132 +29,146 @@ export default function Login() {
 
   return (
     <div style={{
-      display: 'flex', minHeight: '100vh',
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #f0faf6 0%, #e8f5f0 30%, #f7fdf9 60%, #edfaf3 100%)',
+      display: 'flex', flexDirection: 'column',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-      background: '#060910',
+      position: 'relative', overflow: 'hidden',
     }}>
 
-      {/* LEFT PANEL */}
-      <div style={{ flex: '0 0 52%', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #060d1a 0%, #0a1628 30%, #071a12 65%, #060d1a 100%)' }} />
+      {/* Background decorative blobs — same as landing */}
+      <div style={{ position: 'absolute', top: -120, right: -120, width: 600, height: 600, background: 'radial-gradient(circle, rgba(29,158,117,0.1) 0%, transparent 65%)', borderRadius: '50%', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: -100, left: -100, width: 500, height: 500, background: 'radial-gradient(circle, rgba(29,158,117,0.07) 0%, transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: '40%', left: '60%', width: 300, height: 300, background: 'radial-gradient(circle, rgba(29,158,117,0.05) 0%, transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }} />
 
-        {/* Globe */}
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <svg viewBox="0 0 500 500" style={{ width: '85%', maxWidth: 480, opacity: 0.85 }}>
-            <circle cx="250" cy="250" r="200" fill="none" stroke="rgba(29,158,117,0.08)" strokeWidth="40" />
-            <circle cx="250" cy="250" r="180" fill="none" stroke="rgba(29,158,117,0.06)" strokeWidth="1" />
-            <circle cx="250" cy="250" r="160" fill="#091422" stroke="rgba(29,158,117,0.2)" strokeWidth="1" />
-            {[-120,-80,-40,0,40,80,120].map((offset, i) => {
-              const r = Math.sqrt(Math.max(0, 160*160 - offset*offset))
-              return r > 0 ? <ellipse key={i} cx="250" cy={250+offset} rx={r} ry={r*0.3} fill="none" stroke="rgba(29,158,117,0.12)" strokeWidth="0.5" /> : null
-            })}
-            {[0,30,60,90,120,150].map((angle, i) => (
-              <ellipse key={i} cx="250" cy="250" rx={160 * Math.abs(Math.cos(angle * Math.PI / 180))} ry="160" fill="none" stroke="rgba(29,158,117,0.12)" strokeWidth="0.5" transform={`rotate(${angle}, 250, 250)`} />
-            ))}
-            <path d="M230,145 L255,140 L270,155 L275,175 L268,195 L278,215 L280,240 L272,265 L260,285 L248,305 L240,315 L232,300 L228,280 L222,260 L218,240 L220,215 L215,195 L218,175 L225,160 Z" fill="rgba(29,158,117,0.35)" stroke="rgba(29,158,117,0.6)" strokeWidth="1.5" />
-            <ellipse cx="282" cy="282" rx="6" ry="12" fill="rgba(29,158,117,0.25)" stroke="rgba(29,158,117,0.4)" strokeWidth="1" transform="rotate(15,282,282)" />
-            <path d="M218,115 L235,108 L248,112 L250,125 L238,130 L220,128 Z" fill="rgba(29,158,117,0.12)" stroke="rgba(29,158,117,0.2)" strokeWidth="0.8" />
-            {[
-              {x:258,y:220},{x:220,y:200},{x:218,y:190},{x:268,y:248},{x:248,y:165},{x:265,y:278},{x:255,y:210},{x:226,y:183},
-            ].map((dot, i) => (
-              <g key={i}>
-                <circle cx={dot.x} cy={dot.y} r={8} fill="rgba(29,158,117,0.08)" />
-                <circle cx={dot.x} cy={dot.y} r={5} fill="rgba(29,158,117,0.15)" />
-                <circle cx={dot.x} cy={dot.y} r={2.5} fill="#1d9e75" />
-              </g>
-            ))}
-            {[[258,220,220,200],[258,220,265,278],[258,220,248,165],[220,200,218,190],[265,278,248,165]].map(([x1,y1,x2,y2],i) => (
-              <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(29,158,117,0.2)" strokeWidth="0.8" strokeDasharray="3,3" />
-            ))}
-            <circle cx="250" cy="250" r="160" fill="none" stroke="url(#rimGrad)" strokeWidth="1.5" />
-            <defs>
-              <linearGradient id="rimGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="rgba(29,158,117,0.6)" />
-                <stop offset="50%" stopColor="rgba(29,158,117,0.1)" />
-                <stop offset="100%" stopColor="rgba(29,158,117,0.4)" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
+      {/* Nav */}
+      <nav style={{ padding: '24px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 9, textDecoration: 'none' }}>
+          <div style={{ width: 32, height: 32, background: '#1d9e75', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: 'white', fontSize: 15 }}>N</div>
+          <span style={{ fontWeight: 700, fontSize: 16, color: '#111', letterSpacing: -0.4 }}>NyumbaVerified</span>
+        </Link>
+        <p style={{ color: '#888', fontSize: 14, margin: 0 }}>
+          Don't have an account?{' '}
+          <Link to="/signup" style={{ color: '#1d9e75', fontWeight: 600, textDecoration: 'none' }}>Sign up free</Link>
+        </p>
+      </nav>
 
-        {/* City marquee */}
-        <div style={{ position: 'absolute', bottom: 120, left: 0, right: 0, overflow: 'hidden', padding: '10px 0', borderTop: '1px solid rgba(29,158,117,0.1)', borderBottom: '1px solid rgba(29,158,117,0.1)', background: 'rgba(6,13,26,0.6)', backdropFilter: 'blur(4px)' }}>
-          <div style={{ display: 'flex', gap: 40, whiteSpace: 'nowrap', animation: 'marquee 20s linear infinite' }}>
-            {[...['NAIROBI','LAGOS','ACCRA','JOHANNESBURG','CAIRO','DAR ES SALAAM','KAMPALA','LONDON','DUBAI'],...['NAIROBI','LAGOS','ACCRA','JOHANNESBURG','CAIRO','DAR ES SALAAM','KAMPALA','LONDON','DUBAI'],...['NAIROBI','LAGOS','ACCRA','JOHANNESBURG','CAIRO','DAR ES SALAAM','KAMPALA','LONDON','DUBAI']].map((city, i) => (
-              <span key={i} style={{ color: 'rgba(29,158,117,0.7)', fontSize: 11, letterSpacing: 3, fontWeight: 500 }}>{city}</span>
-            ))}
-          </div>
-        </div>
+      {/* Main content — centered card */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 24px 48px', position: 'relative' }}>
+        <div style={{ width: '100%', maxWidth: 400 }}>
 
-        {/* Bottom text */}
-        <div style={{ position: 'absolute', bottom: 40, left: 48, right: 48, zIndex: 10 }}>
-          <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: 20, fontWeight: 700, margin: '0 0 6px', lineHeight: 1.3 }}>Housing without borders.</p>
-          <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, margin: 0, letterSpacing: 1 }}>KENYA · NIGERIA · GHANA · SOUTH AFRICA · AND GROWING</p>
-        </div>
+          {/* Card */}
+          <div style={{
+            background: 'rgba(255,255,255,0.85)',
+            backdropFilter: 'blur(20px)',
+            borderRadius: 20,
+            border: '1px solid rgba(255,255,255,0.9)',
+            boxShadow: '0 8px 40px rgba(29,158,117,0.1), 0 1px 3px rgba(0,0,0,0.06)',
+            padding: '40px 36px',
+          }}>
 
-        {/* Logo */}
-        <div style={{ position: 'relative', zIndex: 10, padding: '32px 40px', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 34, height: 34, background: '#1d9e75', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: 'white', fontSize: 15 }}>N</div>
-          <span style={{ color: 'white', fontWeight: 700, fontSize: 16 }}>NyumbaVerified</span>
-          <span style={{ background: 'rgba(29,158,117,0.15)', border: '1px solid rgba(29,158,117,0.3)', color: '#1d9e75', fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 20, letterSpacing: 1, marginLeft: 4 }}>GLOBAL</span>
-        </div>
-
-        <style>{`@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-33.33%); } }`}</style>
-      </div>
-
-      {/* RIGHT PANEL */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#090f1a', padding: '48px 40px', position: 'relative' }}>
-        <div style={{ position: 'absolute', top: -60, right: -60, width: 300, height: 300, background: 'radial-gradient(circle, rgba(29,158,117,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
-
-        <div style={{ width: '100%', maxWidth: 340, position: 'relative' }}>
-          <div style={{ marginBottom: 36 }}>
-            <h1 style={{ color: 'white', fontSize: 28, fontWeight: 700, margin: '0 0 8px', letterSpacing: -0.5 }}>Sign in</h1>
-            <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 14, margin: 0 }}>Good to have you back.</p>
-          </div>
-
-          <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: 14 }}>
-              <label style={{ display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: 500, marginBottom: 7, letterSpacing: 0.3 }}>EMAIL</label>
-              <input type="email" required value={form.email} placeholder="you@example.com"
-                onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                onFocus={() => setFocusedField('email')} onBlur={() => setFocusedField(null)}
-                style={{ width: '100%', padding: '13px 16px', background: focusedField === 'email' ? 'rgba(29,158,117,0.06)' : 'rgba(255,255,255,0.04)', border: `1px solid ${focusedField === 'email' ? 'rgba(29,158,117,0.5)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 12, color: 'white', fontSize: 14, outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s', caretColor: '#1d9e75' }} />
+            {/* Header */}
+            <div style={{ marginBottom: 28 }}>
+              <h1 style={{ fontSize: 26, fontWeight: 800, color: '#0a0a0a', margin: '0 0 6px', letterSpacing: -0.6 }}>
+                Welcome back
+              </h1>
+              <p style={{ color: '#888', fontSize: 14, margin: 0 }}>
+                Sign in to your NyumbaVerified account
+              </p>
             </div>
 
-            <div style={{ marginBottom: 8 }}>
-              <label style={{ display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: 500, marginBottom: 7, letterSpacing: 0.3 }}>PASSWORD</label>
-              <input type="password" required value={form.password} placeholder="••••••••••"
-                onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                onFocus={() => setFocusedField('password')} onBlur={() => setFocusedField(null)}
-                style={{ width: '100%', padding: '13px 16px', background: focusedField === 'password' ? 'rgba(29,158,117,0.06)' : 'rgba(255,255,255,0.04)', border: `1px solid ${focusedField === 'password' ? 'rgba(29,158,117,0.5)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 12, color: 'white', fontSize: 14, outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s', caretColor: '#1d9e75' }} />
-            </div>
-
-            {error && (
-              <div style={{ background: 'rgba(220,60,60,0.08)', border: '1px solid rgba(220,60,60,0.2)', borderRadius: 10, padding: '10px 14px', marginBottom: 16, color: '#ff7070', fontSize: 13 }}>{error}</div>
-            )}
-
-            <button type="submit" disabled={loading} style={{ width: '100%', padding: '14px', marginTop: 20, background: loading ? 'rgba(29,158,117,0.4)' : '#1d9e75', border: 'none', borderRadius: 12, color: 'white', fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', letterSpacing: 0.2, boxShadow: loading ? 'none' : '0 4px 24px rgba(29,158,117,0.35)', transition: 'all 0.2s' }}>
-              {loading ? 'Signing in…' : 'Continue →'}
-            </button>
-          </form>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '24px 0' }}>
-            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
-            <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12 }}>or</span>
-            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
-          </div>
-
-          <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 13, margin: 0 }}>
-            New to NyumbaVerified?{' '}
-            <Link to="/signup" style={{ color: '#1d9e75', textDecoration: 'none', fontWeight: 600 }}>Create account</Link>
-          </p>
-
-          <div style={{ marginTop: 48, paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-            {[{ icon: '🔒', text: 'Escrow protected' }, { icon: '✅', text: 'ID verified' }, { icon: '🌍', text: 'Pan-African' }].map(item => (
-              <div key={item.text} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 13 }}>{item.icon}</span>
-                <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 11, fontWeight: 500 }}>{item.text}</span>
+            {/* Form */}
+            <form onSubmit={handleSubmit}>
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#444', marginBottom: 6 }}>
+                  Email address
+                </label>
+                <input
+                  type="email" required
+                  value={form.email}
+                  placeholder="you@example.com"
+                  onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                  onFocus={() => setFocused('email')}
+                  onBlur={() => setFocused(null)}
+                  style={{
+                    width: '100%', padding: '12px 15px',
+                    background: focused === 'email' ? '#fff' : 'rgba(255,255,255,0.7)',
+                    border: `1.5px solid ${focused === 'email' ? '#1d9e75' : '#e0e0e0'}`,
+                    borderRadius: 11, fontSize: 14, color: '#111',
+                    outline: 'none', boxSizing: 'border-box',
+                    transition: 'all 0.2s', caretColor: '#1d9e75',
+                    boxShadow: focused === 'email' ? '0 0 0 3px rgba(29,158,117,0.1)' : 'none',
+                  }}
+                />
               </div>
+
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <label style={{ fontSize: 13, fontWeight: 600, color: '#444' }}>Password</label>
+                </div>
+                <input
+                  type="password" required
+                  value={form.password}
+                  placeholder="••••••••"
+                  onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+                  onFocus={() => setFocused('password')}
+                  onBlur={() => setFocused(null)}
+                  style={{
+                    width: '100%', padding: '12px 15px',
+                    background: focused === 'password' ? '#fff' : 'rgba(255,255,255,0.7)',
+                    border: `1.5px solid ${focused === 'password' ? '#1d9e75' : '#e0e0e0'}`,
+                    borderRadius: 11, fontSize: 14, color: '#111',
+                    outline: 'none', boxSizing: 'border-box',
+                    transition: 'all 0.2s', caretColor: '#1d9e75',
+                    boxShadow: focused === 'password' ? '0 0 0 3px rgba(29,158,117,0.1)' : 'none',
+                  }}
+                />
+              </div>
+
+              {error && (
+                <div style={{
+                  background: '#fff5f5', border: '1px solid #fecaca',
+                  borderRadius: 10, padding: '10px 14px', marginBottom: 16,
+                  color: '#dc2626', fontSize: 13,
+                }}>{error}</div>
+              )}
+
+              <button
+                type="submit" disabled={loading}
+                style={{
+                  width: '100%', padding: '13px',
+                  background: loading ? 'rgba(29,158,117,0.6)' : '#1d9e75',
+                  border: 'none', borderRadius: 11,
+                  color: 'white', fontSize: 15, fontWeight: 700,
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  letterSpacing: -0.2,
+                  boxShadow: loading ? 'none' : '0 4px 18px rgba(29,158,117,0.35)',
+                  transition: 'all 0.2s',
+                }}
+              >
+                {loading ? 'Signing in…' : 'Sign in →'}
+              </button>
+            </form>
+
+            {/* Divider */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0' }}>
+              <div style={{ flex: 1, height: 1, background: '#f0f0f0' }} />
+              <span style={{ color: '#bbb', fontSize: 12 }}>or</span>
+              <div style={{ flex: 1, height: 1, background: '#f0f0f0' }} />
+            </div>
+
+            <p style={{ textAlign: 'center', color: '#888', fontSize: 13, margin: 0 }}>
+              New here?{' '}
+              <Link to="/signup" style={{ color: '#1d9e75', fontWeight: 600, textDecoration: 'none' }}>
+                Create a free account
+              </Link>
+            </p>
+          </div>
+
+          {/* Trust badges below card */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 24, flexWrap: 'wrap' }}>
+            {['🔒 Escrow protected', '✅ ID verified landlords', '🌍 Pan-African'].map(b => (
+              <span key={b} style={{ color: '#888', fontSize: 12, fontWeight: 500 }}>{b}</span>
             ))}
           </div>
         </div>
