@@ -13,6 +13,12 @@ export default function ListingDetail() {
   const [booking, setBooking] = useState(false)
   const [booked, setBooked] = useState(false)
   const [error, setError] = useState('')
+  const [reportOpen, setReportOpen] = useState(false)
+  const [reportCat, setReportCat] = useState('')
+  const [reportDetails, setReportDetails] = useState('')
+  const [reportBusy, setReportBusy] = useState(false)
+  const [reportDone, setReportDone] = useState(false)
+  const [reportErr, setReportErr] = useState('')
 
   useEffect(() => {
     async function fetch() {
@@ -44,6 +50,23 @@ export default function ListingDetail() {
       setBooked(true)
     }
     setBooking(false)
+  }
+
+  async function submitReport() {
+    if (!reportCat) { setReportErr('Please choose a reason'); return }
+    setReportErr('')
+    setReportBusy(true)
+    const reason = reportDetails.trim() ? `${reportCat}: ${reportDetails.trim()}` : reportCat
+    const { data: rep, error: err } = await supabase.from('fraud_reports').insert({
+      reporter_id: profile.id,
+      reported_id: listing.owner_id,
+      reason,
+      status: 'open',
+    }).select().single()
+    if (err) { setReportErr(err.message); setReportBusy(false); return }
+    notify('fraud_reported', { reportId: rep.id }) // emails the admin (non-blocking)
+    setReportDone(true)
+    setReportBusy(false)
   }
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-400">Loading…</div>
@@ -104,6 +127,12 @@ export default function ListingDetail() {
                     : <p className="text-xs text-yellow-600">⚠️ Not yet verified</p>}
                 </div>
               </div>
+              {profile && profile.id !== listing.owner_id && (
+                <button onClick={() => setReportOpen(true)}
+                  className="mt-3 text-xs text-gray-400 hover:text-red-500 transition-colors">
+                  🚩 Report this landlord
+                </button>
+              )}
             </div>
           </div>
 
@@ -132,6 +161,57 @@ export default function ListingDetail() {
           </div>
         </div>
       </div>
+
+      {reportOpen && (
+        <div onClick={() => !reportBusy && setReportOpen(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 16 }}>
+          <div onClick={e => e.stopPropagation()} className="bg-white rounded-2xl w-full max-w-md p-6">
+            {reportDone ? (
+              <div className="text-center py-4">
+                <p className="text-4xl mb-2">✅</p>
+                <h3 className="font-semibold text-gray-800">Report submitted</h3>
+                <p className="text-sm text-gray-500 mt-1">Thank you. Our team has been notified and will review this.</p>
+                <button onClick={() => { setReportOpen(false); setReportDone(false); setReportCat(''); setReportDetails('') }}
+                  className="mt-4 text-sm text-brand-600 underline">Close</button>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="text-lg font-semibold text-gray-800">Report this landlord</h3>
+                  <button onClick={() => setReportOpen(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
+                </div>
+                <p className="text-sm text-gray-500 mb-4">
+                  Reporting <span className="font-medium">{listing.profiles?.full_name}</span>. Our admin team is notified right away.
+                </p>
+
+                <label className="block text-xs font-medium text-gray-600 mb-1">What's wrong?</label>
+                <select value={reportCat} onChange={e => setReportCat(e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                  <option value="">Choose a reason…</option>
+                  <option>Fake or non-existent property</option>
+                  <option>Asked for payment outside the platform</option>
+                  <option>Impersonating someone else</option>
+                  <option>Harassment or abusive behaviour</option>
+                  <option>Other</option>
+                </select>
+
+                <label className="block text-xs font-medium text-gray-600 mb-1">Details (optional)</label>
+                <textarea value={reportDetails} onChange={e => setReportDetails(e.target.value)} rows={3}
+                  placeholder="Anything that helps us investigate…"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none" />
+
+                {reportErr && <p className="text-red-500 text-xs mb-2">{reportErr}</p>}
+
+                <button onClick={submitReport} disabled={reportBusy}
+                  className="w-full bg-red-500 hover:bg-red-600 disabled:opacity-60 text-white font-medium py-2.5 rounded-lg text-sm transition-colors">
+                  {reportBusy ? 'Submitting…' : 'Submit report'}
+                </button>
+                <p className="text-xs text-gray-400 text-center mt-2">False reports may affect your own account.</p>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
