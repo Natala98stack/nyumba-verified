@@ -20,31 +20,34 @@ function useMobile() {
 export default function Dashboard() {
   const { profile, signOut } = useAuth()
   const navigate = useNavigate()
-  const location = useLocation()
   const mobile = useMobile()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [stats, setStats] = useState({ listings: 0, bookings: 0, viewings: 0 })
+  const [currentPath, setCurrentPath] = useState(window.location.pathname)
 
   useEffect(() => {
-    if (profile?.role === 'admin') {
+    if (!profile) return
+    if (profile.role === 'admin') {
       navigate('/admin')
       return
     }
-    if (profile) fetchStats()
+    fetchStats()
   }, [profile])
 
   async function fetchStats() {
-    if (profile.role === 'tenant') {
-      const [bookings] = await Promise.all([
-        supabase.from('viewings').select('id').eq('tenant_id', profile.id),
-      ])
-      setStats({ bookings: bookings.data?.length || 0 })
-    } else {
-      const [listings, viewings] = await Promise.all([
-        supabase.from('listings').select('id').eq('owner_id', profile.id),
-        supabase.from('viewings').select('id').eq('landlord_id', profile.id),
-      ])
-      setStats({ listings: listings.data?.length || 0, viewings: viewings.data?.length || 0 })
+    try {
+      if (profile.role === 'tenant') {
+        const { data } = await supabase.from('viewings').select('id').eq('tenant_id', profile.id)
+        setStats({ bookings: data?.length || 0, listings: 0, viewings: 0 })
+      } else {
+        const [{ data: lData }, { data: vData }] = await Promise.all([
+          supabase.from('listings').select('id').eq('owner_id', profile.id),
+          supabase.from('viewings').select('id').eq('landlord_id', profile.id),
+        ])
+        setStats({ listings: lData?.length || 0, viewings: vData?.length || 0, bookings: 0 })
+      }
+    } catch (err) {
+      console.error('Stats fetch error:', err)
     }
   }
 
@@ -70,7 +73,6 @@ export default function Dashboard() {
   }
   const kyc = KYC_STATUS[profile.kyc_status] || KYC_STATUS.pending
 
-  // Nav items by role
   const TENANT_NAV = [
     { icon: '🏠', label: 'Dashboard', to: '/dashboard' },
     { icon: '🔍', label: 'Browse listings', to: '/listings' },
@@ -101,7 +103,6 @@ export default function Dashboard() {
   ]
 
   const ACTIONS = isTenant ? TENANT_ACTIONS : LANDLORD_ACTIONS
-
   const SIDEBAR_W = 240
 
   return (
@@ -111,16 +112,15 @@ export default function Dashboard() {
         @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
         .action-card { transition: transform 0.2s ease, box-shadow 0.2s ease !important; cursor: pointer; }
         .action-card:hover { transform: translateY(-3px) !important; box-shadow: 0 10px 32px rgba(0,0,0,0.1) !important; }
-        .nav-link { transition: all 0.15s ease !important; }
-        .nav-link:hover { background: rgba(29,158,117,0.08) !important; }
+        .nav-lnk { transition: all 0.15s ease !important; }
+        .nav-lnk:hover { background: rgba(29,158,117,0.08) !important; color: #0f6e56 !important; }
+        .signout-btn:hover { background: #fff0f0 !important; color: #c92a2a !important; }
       `}</style>
 
       {/* ── SIDEBAR ── */}
       {(!mobile || sidebarOpen) && (
         <>
-          {/* Mobile overlay */}
           {mobile && <div onClick={() => setSidebarOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 40 }} />}
-
           <aside style={{
             width: SIDEBAR_W, flexShrink: 0,
             background: '#fff',
@@ -137,9 +137,7 @@ export default function Dashboard() {
                 <div style={{ width: 36, height: 36, background: `linear-gradient(135deg, ${G}, ${GD})`, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#fff', fontSize: 17, boxShadow: '0 2px 8px rgba(29,158,117,0.3)' }}>N</div>
                 <div>
                   <p style={{ fontWeight: 800, fontSize: 14, color: '#0a0a0a', margin: 0, letterSpacing: -0.3 }}>NyumbaVerified</p>
-                  <p style={{ fontSize: 10, color: '#bbb', margin: 0, letterSpacing: 0.5, textTransform: 'uppercase' }}>
-                    {profile.role?.replace('_', ' ')}
-                  </p>
+                  <p style={{ fontSize: 10, color: '#bbb', margin: 0, letterSpacing: 0.5, textTransform: 'uppercase' }}>{profile.role?.replace('_', ' ')}</p>
                 </div>
               </div>
             </div>
@@ -160,14 +158,15 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Nav */}
+            {/* Nav links */}
             <nav style={{ flex: 1, padding: '16px 10px', overflowY: 'auto' }}>
               <p style={{ fontSize: 10, fontWeight: 700, color: '#ccc', letterSpacing: 1.5, textTransform: 'uppercase', padding: '0 10px', marginBottom: 8 }}>Menu</p>
               {NAV.map(item => {
-                const active = location.pathname === item.to
+                const active = currentPath === item.to
                 return (
-                  <Link key={item.to} to={item.to} className="nav-link"
-                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, textDecoration: 'none', marginBottom: 2, background: active ? GL : 'transparent', color: active ? GD : '#555', fontWeight: active ? 700 : 500, fontSize: 14, borderLeft: active ? `3px solid ${G}` : '3px solid transparent' }}>
+                  <Link key={item.to} to={item.to} className="nav-lnk"
+                    onClick={() => setCurrentPath(item.to)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, textDecoration: 'none', marginBottom: 2, background: active ? GL : 'transparent', color: active ? GD : '#555', fontWeight: active ? 700 : 500, fontSize: 14, borderLeft: active ? `3px solid ${G}` : '3px solid transparent', transition: 'all 0.15s' }}>
                     <span style={{ fontSize: 17 }}>{item.icon}</span>
                     <span>{item.label}</span>
                   </Link>
@@ -177,9 +176,8 @@ export default function Dashboard() {
 
             {/* Sign out */}
             <div style={{ padding: '14px', borderTop: '1px solid #f0f4f1' }}>
-              <button onClick={signOut} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, border: 'none', background: 'transparent', color: '#888', fontSize: 14, fontWeight: 500, cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#fff0f0'; e.currentTarget.style.color = '#c92a2a' }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#888' }}>
+              <button onClick={signOut} className="signout-btn"
+                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, border: 'none', background: 'transparent', color: '#888', fontSize: 14, fontWeight: 500, cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
                 <span style={{ fontSize: 17 }}>🚪</span>
                 <span>Sign out</span>
               </button>
@@ -188,11 +186,11 @@ export default function Dashboard() {
         </>
       )}
 
-      {/* ── MAIN CONTENT ── */}
+      {/* ── MAIN ── */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
 
         {/* Top bar */}
-        <header style={{ background: '#fff', borderBottom: '1px solid #eef2ef', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 30 }}>
+        <header style={{ background: '#fff', borderBottom: '1px solid #eef2ef', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 30, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {mobile && (
               <button onClick={() => setSidebarOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, padding: '4px', color: '#555' }}>☰</button>
@@ -203,12 +201,10 @@ export default function Dashboard() {
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {/* KYC badge */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: kyc.bg, border: `1px solid ${kyc.border}`, borderRadius: 20, padding: '5px 12px' }}>
               <span style={{ width: 7, height: 7, background: kyc.dot, borderRadius: '50%', display: 'inline-block' }} />
               <span style={{ fontSize: 12, color: kyc.color, fontWeight: 600 }}>{kyc.label}</span>
             </div>
-            {/* Avatar */}
             <div style={{ width: 36, height: 36, background: `linear-gradient(135deg, ${G}, ${GD})`, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#fff', fontSize: 14, boxShadow: '0 2px 8px rgba(29,158,117,0.25)' }}>
               {firstName[0]?.toUpperCase()}
             </div>
@@ -218,13 +214,13 @@ export default function Dashboard() {
         {/* Page content */}
         <main style={{ flex: 1, padding: mobile ? '20px 16px' : '28px 32px', overflowY: 'auto' }}>
 
-          {/* KYC nudge banner */}
+          {/* KYC banner */}
           {profile.kyc_status === 'pending' && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', background: '#fff8e1', borderRadius: 14, border: '1px solid #fde68a', marginBottom: 24, animation: 'fadeUp 0.4s ease' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', background: '#fff8e1', borderRadius: 14, border: '1px solid #fde68a', marginBottom: 24, animation: 'fadeUp 0.4s ease', flexWrap: 'wrap' }}>
               <div style={{ width: 40, height: 40, background: '#fff', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>🪪</div>
               <div style={{ flex: 1 }}>
                 <p style={{ fontWeight: 700, fontSize: 14, color: '#92400e', margin: '0 0 2px' }}>Verify your identity to unlock all features</p>
-                <p style={{ fontSize: 13, color: '#b45309', margin: 0 }}>Upload your national ID to build trust with landlords and tenants.</p>
+                <p style={{ fontSize: 13, color: '#b45309', margin: 0 }}>Upload your national ID to build trust with {isTenant ? 'landlords' : 'tenants'}.</p>
               </div>
               <Link to="/verify-kyc" style={{ background: '#f59e0b', color: '#fff', fontWeight: 700, fontSize: 13, padding: '8px 16px', borderRadius: 9, textDecoration: 'none', flexShrink: 0, boxShadow: '0 2px 8px rgba(245,158,11,0.3)' }}>
                 Verify now →
@@ -232,16 +228,16 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Stats row */}
+          {/* Stats */}
           <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr 1fr' : `repeat(${isTenant ? 2 : 3}, 1fr)`, gap: 14, marginBottom: 28 }}>
-            {isTenant ? [
+            {(isTenant ? [
               { icon: '📅', label: 'Bookings made', value: stats.bookings, bg: 'linear-gradient(135deg, #eef3ff, #dce8ff)', accent: '#3b5bdb', sub: 'Total viewings' },
               { icon: '🔍', label: 'Listings available', value: '2,400+', bg: `linear-gradient(135deg, ${GL}, #d0ede3)`, accent: G, sub: 'Verified properties' },
             ] : [
               { icon: '🏠', label: 'My listings', value: stats.listings, bg: `linear-gradient(135deg, ${GL}, #d0ede3)`, accent: G, sub: 'Active properties' },
               { icon: '📅', label: 'Viewing requests', value: stats.viewings, bg: 'linear-gradient(135deg, #eef3ff, #dce8ff)', accent: '#3b5bdb', sub: 'Total bookings' },
               { icon: '⭐', label: 'Rating', value: '—', bg: 'linear-gradient(135deg, #fff8e1, #ffeebb)', accent: '#e67700', sub: 'After first review' },
-            ].map((s, i) => (
+            ]).map((s, i) => (
               <div key={i} style={{ background: '#fff', borderRadius: 16, padding: '20px 22px', border: '1px solid #eef2ef', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', animation: `fadeUp 0.4s ease ${i * 0.08}s both` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
                   <div style={{ width: 44, height: 44, background: s.bg, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>{s.icon}</div>
@@ -263,7 +259,6 @@ export default function Dashboard() {
               {ACTIONS.map((a, i) => (
                 <Link key={i} to={a.to} className="action-card"
                   style={{ textDecoration: 'none', background: '#fff', borderRadius: 16, overflow: 'hidden', border: '1px solid #eef2ef', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', animation: `fadeUp 0.4s ease ${i * 0.07 + 0.1}s both` }}>
-                  {/* Gradient top */}
                   <div style={{ height: 80, background: a.gradient, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, position: 'relative' }}>
                     {a.icon}
                     <span style={{ position: 'absolute', top: 10, right: 10, background: a.accent, color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 20, letterSpacing: 0.5 }}>{a.tag}</span>
@@ -271,19 +266,16 @@ export default function Dashboard() {
                   <div style={{ padding: '14px 16px' }}>
                     <p style={{ fontWeight: 700, fontSize: 14, color: '#0a0a0a', margin: '0 0 4px', letterSpacing: -0.2 }}>{a.title}</p>
                     <p style={{ fontSize: 12, color: '#999', margin: '0 0 12px', lineHeight: 1.4 }}>{a.desc}</p>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: a.accent, fontSize: 12, fontWeight: 700 }}>
-                      <span>Go →</span>
-                    </div>
+                    <span style={{ color: a.accent, fontSize: 12, fontWeight: 700 }}>Go →</span>
                   </div>
                 </Link>
               ))}
             </div>
           </div>
 
-          {/* Bottom info cards */}
+          {/* Bottom cards */}
           <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: 16 }}>
 
-            {/* Platform trust */}
             <div style={{ background: '#fff', borderRadius: 16, padding: '22px 24px', border: '1px solid #eef2ef', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                 <div style={{ width: 36, height: 36, background: GL, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>🛡️</div>
@@ -298,38 +290,34 @@ export default function Dashboard() {
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 3 ? '1px solid #f5f5f5' : 'none' }}>
                   <span style={{ fontSize: 15 }}>{item.icon}</span>
                   <span style={{ fontSize: 13, color: '#555', flex: 1 }}>{item.text}</span>
-                  <span style={{ fontSize: 12, color: item.ok ? G : '#bbb', fontWeight: 600 }}>{item.ok ? '✓' : '—'}</span>
+                  <span style={{ fontSize: 12, color: item.ok ? G : '#bbb', fontWeight: 700 }}>{item.ok ? '✓' : '—'}</span>
                 </div>
               ))}
             </div>
 
-            {/* Getting started / tips */}
             <div style={{ background: `linear-gradient(135deg, #f7fdf9 0%, #edfaf3 100%)`, borderRadius: 16, padding: '22px 24px', border: `1px solid ${G}20` }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                 <div style={{ width: 36, height: 36, background: GL, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>💡</div>
-                <h3 style={{ fontWeight: 700, fontSize: 14, color: '#0a0a0a', margin: 0 }}>
-                  {isTenant ? 'Tips for tenants' : 'Tips for landlords'}
-                </h3>
+                <h3 style={{ fontWeight: 700, fontSize: 14, color: '#0a0a0a', margin: 0 }}>{isTenant ? 'Tips for tenants' : 'Tips for landlords'}</h3>
               </div>
               {(isTenant ? [
-                'Always verify a landlord\'s badge before booking a viewing',
-                'Your viewing fee is protected — you\'ll get a refund if they don\'t show',
+                'Always verify a landlord\'s badge before booking',
+                'Your viewing fee is protected — refund if no-show',
                 'Leave honest reviews to help other tenants',
-                'Report suspicious activity immediately to protect others',
+                'Report suspicious activity immediately',
               ] : [
-                'Verify your ID to get the trusted badge and more bookings',
-                'Upload clear photos — listings with photos get 3x more views',
+                'Verify your ID to get the trusted badge',
+                'Clear photos get 3x more views',
                 'Respond to viewing requests within 24 hours',
-                'Build your reputation with consistent positive reviews',
+                'Build reputation with consistent positive reviews',
               ]).map((tip, i) => (
                 <div key={i} style={{ display: 'flex', gap: 10, padding: '7px 0', borderBottom: i < 3 ? '1px solid rgba(29,158,117,0.1)' : 'none' }}>
-                  <span style={{ color: G, fontWeight: 700, fontSize: 12, flexShrink: 0, marginTop: 1 }}>0{i + 1}</span>
+                  <span style={{ color: G, fontWeight: 800, fontSize: 12, flexShrink: 0, marginTop: 1 }}>0{i + 1}</span>
                   <span style={{ fontSize: 13, color: '#555', lineHeight: 1.5 }}>{tip}</span>
                 </div>
               ))}
             </div>
           </div>
-
         </main>
       </div>
     </div>
