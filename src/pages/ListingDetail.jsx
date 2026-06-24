@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
+import { notify } from '../lib/notify'
 
 export default function ListingDetail() {
   const { id } = useParams()
@@ -30,15 +31,18 @@ export default function ListingDetail() {
     if (!date) { setError('Please pick a date and time'); return }
     setError('')
     setBooking(true)
-    const { error: err } = await supabase.from('viewings').insert({
+    const { data: created, error: err } = await supabase.from('viewings').insert({
       listing_id: listing.id,
       tenant_id: profile.id,
       landlord_id: listing.owner_id,
       scheduled_at: new Date(date).toISOString(),
       fee_amount: 500,
-    })
+    }).select().single()
     if (err) setError(err.message)
-    else setBooked(true)
+    else {
+      notify('viewing_created', { viewingId: created.id }) // emails the landlord (non-blocking)
+      setBooked(true)
+    }
     setBooking(false)
   }
 

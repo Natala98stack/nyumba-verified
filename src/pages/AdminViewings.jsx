@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { notify } from '../lib/notify'
 
 export default function AdminViewings() {
   const [viewings, setViewings] = useState([])
@@ -30,6 +31,7 @@ export default function AdminViewings() {
   async function updateStatus(id, status) {
     await supabase.from('viewings').update({ status }).eq('id', id)
     setViewings(v => v.map(x => x.id === id ? { ...x, status } : x))
+    if (status === 'confirmed') notify('viewing_confirmed', { viewingId: id }) // emails the tenant
   }
 
   const STATUS_STYLE = {
@@ -118,6 +120,12 @@ export default function AdminViewings() {
                       </>
                     )}
                     {v.status === 'pending' && (
+                      <button onClick={() => updateStatus(v.id, 'confirmed')}
+                        className="text-xs bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1.5 rounded-lg transition-colors">
+                        Confirm viewing
+                      </button>
+                    )}
+                    {(v.status === 'pending' || v.status === 'confirmed') && (
                       <button onClick={() => updateStatus(v.id, 'completed')}
                         className="text-xs bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg transition-colors">
                         Mark completed

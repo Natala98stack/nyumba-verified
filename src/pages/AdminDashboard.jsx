@@ -6,7 +6,7 @@ import { useAuth } from '../hooks/useAuth'
 export default function AdminDashboard() {
   const { profile, signOut } = useAuth()
   const navigate = useNavigate()
-  const [stats, setStats] = useState({ users: 0, listings: 0, viewings: 0, reports: 0 })
+  const [stats, setStats] = useState({ users: 0, listings: 0, viewings: 0, reports: 0, kyc: 0 })
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -39,6 +39,7 @@ export default function AdminDashboard() {
       listings: listings.data?.length || 0,
       viewings: viewings.data?.length || 0,
       reports: reports.data?.length || 0,
+      kyc: (users.data || []).filter(u => u.kyc_status === 'submitted').length,
     })
     setLoading(false)
   }
@@ -109,6 +110,16 @@ export default function AdminDashboard() {
             <div>
               <p className="font-medium text-gray-800">Viewings</p>
               <p className="text-sm text-gray-500">Monitor bookings and escrow</p>
+            </div>
+          </Link>
+          <Link to="/admin/kyc" className="bg-white rounded-xl border border-gray-100 p-5 hover:shadow-sm hover:border-brand-200 transition-all flex items-center gap-4">
+            <span className="text-3xl">🪪</span>
+            <div>
+              <p className="font-medium text-gray-800">
+                KYC review
+                {stats.kyc > 0 && <span className="ml-2 text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full">{stats.kyc} waiting</span>}
+              </p>
+              <p className="text-sm text-gray-500">Approve or reject ID submissions</p>
             </div>
           </Link>
         </div>
