@@ -34,6 +34,7 @@ export default function ListingDetail() {
   }, [id])
 
   async function handleBook() {
+    if (profile?.kyc_status !== 'verified') { setError('Please verify your identity before booking.'); return }
     if (!date) { setError('Please pick a date and time'); return }
     setError('')
     setBooking(true)
@@ -144,6 +145,26 @@ export default function ListingDetail() {
                 <p className="text-sm text-gray-500 mt-1">KSh 500 viewing fee held in escrow until your visit is confirmed.</p>
                 <Link to="/my-bookings" className="mt-3 inline-block text-sm text-brand-600 underline">View my bookings</Link>
               </div>
+            ) : profile?.kyc_status !== 'verified' ? (
+              profile?.kyc_status === 'submitted' ? (
+                <div className="text-center py-4">
+                  <div className="w-12 h-12 mx-auto rounded-xl bg-amber-50 flex items-center justify-center text-2xl mb-3">⏳</div>
+                  <h3 className="font-semibold text-gray-800">Verification under review</h3>
+                  <p className="text-sm text-gray-500 mt-1">We're checking your ID. You'll be able to book viewings as soon as you're approved — usually within 24 hours.</p>
+                </div>
+              ) : (
+                <div className="text-center py-4">
+                  <div className="w-12 h-12 mx-auto rounded-xl bg-amber-50 flex items-center justify-center text-2xl mb-3">🪪</div>
+                  <h3 className="font-semibold text-gray-800">Verify to book</h3>
+                  <p className="text-sm text-gray-500 mt-1 mb-4">For everyone's safety, you need a verified identity before you can book a viewing.</p>
+                  <Link to="/verify-kyc" className="block w-full bg-brand-500 hover:bg-brand-600 text-white font-medium py-2.5 rounded-lg text-sm transition-colors">
+                    Verify my identity →
+                  </Link>
+                  {profile?.kyc_status === 'rejected' && (
+                    <p className="text-xs text-red-500 mt-2">Your last submission was rejected — please re-upload a clear photo.</p>
+                  )}
+                </div>
+              )
             ) : (
               <>
                 <h3 className="font-medium text-gray-700 mb-3">Book a viewing</h3>
