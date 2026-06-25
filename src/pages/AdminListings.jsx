@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import AdminLayout from '../components/shared/AdminLayout'
+import { Clock, Check, MapPin, BadgeCheck, Trash2 } from 'lucide-react'
 
 export default function AdminListings() {
   const [listings, setListings] = useState([])
@@ -43,7 +44,7 @@ export default function AdminListings() {
         {['all', 'pending', 'approved', 'rental', 'bnb'].map(f => (
           <button key={f} onClick={() => setFilter(f)}
             className={`text-sm px-4 py-1.5 rounded-full border transition-colors capitalize ${filter === f ? 'bg-brand-500 text-white border-brand-500' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-300'}`}>
-            {f === 'all' ? 'All' : f === 'pending' ? '⏳ Pending' : f === 'approved' ? '✅ Approved' : f}
+            {f === 'all' ? 'All' : f === 'pending' ? <><Clock size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Pending</> : f === 'approved' ? <><Check size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Approved</> : f}
           </button>
         ))}
       </div>
@@ -60,23 +61,23 @@ export default function AdminListings() {
                   <span className={`text-xs px-2 py-0.5 rounded-full ${listing.type === 'bnb' ? 'bg-purple-100 text-purple-700' : 'bg-brand-50 text-brand-700'}`}>
                     {listing.type === 'bnb' ? 'BnB' : 'Rental'}
                   </span>
-                  {!listing.is_approved && <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full">⏳ Pending approval</span>}
+                  {!listing.is_approved && <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full"><Clock size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 3 }} />Pending approval</span>}
                 </div>
                 <div className="flex items-center gap-3 flex-wrap text-xs text-gray-400">
-                  {listing.location_name && <span>📍 {listing.location_name}</span>}
+                  {listing.location_name && <span><MapPin size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 3 }} />{listing.location_name}</span>}
                   <span>KSh {listing.price?.toLocaleString()}/{listing.type === 'bnb' ? 'night' : 'month'}</span>
                   <span>By: {listing.profiles?.full_name}</span>
-                  {listing.profiles?.kyc_status === 'verified' && <span className="text-green-600">✅ Verified owner</span>}
+                  {listing.profiles?.kyc_status === 'verified' && <span className="text-green-600"><BadgeCheck size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 3 }} />Verified owner</span>}
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <button onClick={() => toggleApproved(listing.id, listing.is_approved)}
                   className={`text-xs px-3 py-1.5 rounded-lg transition-colors ${listing.is_approved ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' : 'bg-green-100 text-green-700 hover:bg-green-200'}`}>
-                  {listing.is_approved ? 'Unapprove' : '✅ Approve'}
+                  {listing.is_approved ? 'Unapprove' : <><Check size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Approve</>}
                 </button>
                 <button onClick={() => deleteListing(listing.id)}
                   className="text-xs bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1.5 rounded-lg transition-colors">
-                  🗑️ Delete
+                  <Trash2 size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Delete
                 </button>
               </div>
             </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { Lock, BadgeCheck, Globe } from 'lucide-react'
 
 function useMobile() {
   const [mobile, setMobile] = useState(window.innerWidth < 768)
@@ -177,8 +178,8 @@ export default function Login() {
 
           {/* Trust badges */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: mobile ? 16 : 24, marginTop: 20, flexWrap: 'wrap' }}>
-            {['🔒 Escrow protected', '✅ ID verified', '🌍 Pan-African'].map(b => (
-              <span key={b} style={{ color: '#888', fontSize: 12, fontWeight: 500 }}>{b}</span>
+            {[{ Icon: Lock, t: 'Escrow protected' }, { Icon: BadgeCheck, t: 'ID verified' }, { Icon: Globe, t: 'Pan-African' }].map(b => (
+              <span key={b.t} style={{ color: '#888', fontSize: 12, fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: 5 }}><b.Icon size={14} />{b.t}</span>
             ))}
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { Home, MapPin, BedDouble, ShowerHead, BadgeCheck } from 'lucide-react'
 
 export default function Listings() {
   const [listings, setListings] = useState([])
@@ -59,7 +60,7 @@ export default function Listings() {
           <div className="text-center py-20 text-gray-400">Loading listings…</div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-4xl mb-4">🏠</p>
+            <Home size={44} className="mx-auto mb-4 text-gray-300" />
             <p className="text-gray-500 font-medium">No listings found</p>
             <p className="text-gray-400 text-sm mt-1">Try adjusting your search filters</p>
           </div>
@@ -71,7 +72,7 @@ export default function Listings() {
                 <div className="h-48 bg-gradient-to-br from-brand-50 to-brand-100 flex items-center justify-center">
                   {listing.photos?.[0]
                     ? <img src={listing.photos[0]} alt={listing.title} className="w-full h-full object-cover" />
-                    : <span className="text-5xl">🏠</span>}
+                    : <Home size={48} className="text-gray-300" />}
                 </div>
                 <div className="p-4">
                   <div className="flex items-start justify-between mb-1">
@@ -80,19 +81,19 @@ export default function Listings() {
                       {listing.type === 'bnb' ? 'BnB' : 'Rental'}
                     </span>
                   </div>
-                  {listing.location_name && <p className="text-xs text-gray-400 mb-2">📍 {listing.location_name}</p>}
+                  {listing.location_name && <p className="text-xs text-gray-400 mb-2"><MapPin size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 3 }} />{listing.location_name}</p>}
                   <div className="flex items-center justify-between mt-3">
                     <p className="font-semibold text-brand-600">
                       KSh {listing.price?.toLocaleString()}
                       <span className="text-xs font-normal text-gray-400">/{listing.type === 'bnb' ? 'night' : 'month'}</span>
                     </p>
                     <div className="flex gap-2 text-xs text-gray-400">
-                      {listing.bedrooms && <span>🛏 {listing.bedrooms}</span>}
-                      {listing.bathrooms && <span>🚿 {listing.bathrooms}</span>}
+                      {listing.bedrooms && <span><BedDouble size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 3 }} />{listing.bedrooms}</span>}
+                      {listing.bathrooms && <span><ShowerHead size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 3 }} />{listing.bathrooms}</span>}
                     </div>
                   </div>
                   {listing.profiles?.kyc_status === 'verified' && (
-                    <p className="text-xs text-green-600 mt-2">✅ Verified landlord</p>
+                    <p className="text-xs text-green-600 mt-2"><BadgeCheck size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 3 }} />Verified landlord</p>
                   )}
                 </div>
               </Link>

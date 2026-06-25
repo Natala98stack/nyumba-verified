@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
+import { Home, MapPin } from 'lucide-react'
 
 export default function MyListings() {
   const { user } = useAuth()
@@ -45,7 +46,7 @@ export default function MyListings() {
           <div className="text-center py-20 text-gray-400">Loading…</div>
         ) : listings.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-4xl mb-4">🏠</p>
+            <Home size={44} className="mx-auto mb-4 text-gray-300" />
             <p className="text-gray-500 font-medium">No listings yet</p>
             <Link to="/listings/new" className="mt-3 inline-block text-brand-600 underline text-sm">
               Post your first listing
@@ -62,7 +63,7 @@ export default function MyListings() {
                       {listing.type === 'bnb' ? 'BnB' : 'Rental'}
                     </span>
                   </div>
-                  {listing.location_name && <p className="text-xs text-gray-400">📍 {listing.location_name}</p>}
+                  {listing.location_name && <p className="text-xs text-gray-400"><MapPin size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 3 }} />{listing.location_name}</p>}
                   <p className="text-sm font-semibold text-brand-600 mt-1">
                     KSh {listing.price?.toLocaleString()}/{listing.type === 'bnb' ? 'night' : 'month'}
                   </p>

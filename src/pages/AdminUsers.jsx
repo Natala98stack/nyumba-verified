@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import AdminLayout from '../components/shared/AdminLayout'
+import { AlertTriangle, Phone, Check, X, Flag } from 'lucide-react'
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([])
@@ -70,11 +71,11 @@ export default function AdminUsers() {
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <p className="font-medium text-gray-800">{user.full_name}</p>
-                  {user.is_flagged && <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">⚠️ Flagged</span>}
+                  {user.is_flagged && <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full"><AlertTriangle size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 3 }} />Flagged</span>}
                 </div>
                 <div className="flex items-center gap-3 flex-wrap">
                   <span className="text-xs text-gray-400 capitalize">{user.role?.replace('_', ' ')}</span>
-                  {user.phone && <span className="text-xs text-gray-400">📱 {user.phone}</span>}
+                  {user.phone && <span className="text-xs text-gray-400"><Phone size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 3 }} />{user.phone}</span>}
                   <span className={`text-xs px-2 py-0.5 rounded-full ${KYC_STYLE[user.kyc_status]}`}>
                     {user.kyc_status}
                   </span>
@@ -88,11 +89,11 @@ export default function AdminUsers() {
                   <>
                     <button onClick={() => updateKyc(user.id, 'verified')}
                       className="text-xs bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg transition-colors">
-                      ✅ Verify
+                      <Check size={14} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Verify
                     </button>
                     <button onClick={() => updateKyc(user.id, 'rejected')}
                       className="text-xs bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1.5 rounded-lg transition-colors">
-                      ❌ Reject
+                      <X size={14} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Reject
                     </button>
                   </>
                 )}
@@ -104,7 +105,7 @@ export default function AdminUsers() {
                 )}
                 <button onClick={() => toggleFlag(user.id, user.is_flagged)}
                   className={`text-xs px-3 py-1.5 rounded-lg transition-colors ${user.is_flagged ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}>
-                  {user.is_flagged ? 'Unflag' : '🚩 Flag'}
+                  {user.is_flagged ? 'Unflag' : <><Flag size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Flag</>}
                 </button>
               </div>
             </div>

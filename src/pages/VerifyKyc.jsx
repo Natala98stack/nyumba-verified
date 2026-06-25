@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
+import { CheckCircle2, Clock, PartyPopper, ScanLine, Sparkles, Lock } from 'lucide-react'
 
 // Reads a File as a base64 string (without the data: prefix)
 function toBase64(file) {
@@ -36,7 +37,7 @@ export default function VerifyKyc() {
     return (
       <Shell>
         <div className="text-center py-10">
-          <p className="text-5xl mb-3">✅</p>
+          <CheckCircle2 size={52} className="mx-auto mb-3 text-green-500" />
           <h2 className="text-xl font-semibold text-gray-800">You're verified</h2>
           <p className="text-gray-500 text-sm mt-2">Your identity has been confirmed. The verified badge now shows on your profile and listings.</p>
           <Link to="/dashboard" className="mt-4 inline-block text-brand-600 underline text-sm">Back to dashboard</Link>
@@ -48,7 +49,7 @@ export default function VerifyKyc() {
     return (
       <Shell>
         <div className="text-center py-10">
-          <p className="text-5xl mb-3">⏳</p>
+          <Clock size={52} className="mx-auto mb-3 text-amber-500" />
           <h2 className="text-xl font-semibold text-gray-800">Under review</h2>
           <p className="text-gray-500 text-sm mt-2">We've received your ID. Our team usually reviews submissions within 24 hours. You'll get an update on your dashboard.</p>
           <Link to="/dashboard" className="mt-4 inline-block text-brand-600 underline text-sm">Back to dashboard</Link>
@@ -130,7 +131,7 @@ export default function VerifyKyc() {
     return (
       <Shell>
         <div className="text-center py-10">
-          <p className="text-5xl mb-3">🎉</p>
+          <PartyPopper size={52} className="mx-auto mb-3 text-green-500" />
           <h2 className="text-xl font-semibold text-gray-800">Submitted for review</h2>
           <p className="text-gray-500 text-sm mt-2">Thanks! We'll verify your ID shortly. Redirecting you to your dashboard…</p>
         </div>
@@ -142,7 +143,7 @@ export default function VerifyKyc() {
     <Shell>
       <h1 className="text-2xl font-semibold text-gray-800 mb-1">Verify your identity</h1>
       <p className="text-gray-500 text-sm mb-6">
-        Upload a clear photo of your national ID. Verified accounts get a ✅ badge that builds trust with
+        Upload a clear photo of your national ID. Verified accounts get a verified badge that builds trust with
         {profile?.role === 'tenant' ? ' landlords.' : ' tenants.'}
       </p>
 
@@ -161,7 +162,7 @@ export default function VerifyKyc() {
           ) : (
             <button onClick={() => fileRef.current?.click()}
               className="w-full border-2 border-dashed border-gray-200 rounded-lg py-10 text-center hover:border-brand-300 transition-colors">
-              <p className="text-3xl mb-1">🪪</p>
+              <ScanLine size={30} className="mx-auto mb-1 text-gray-400" />
               <p className="text-sm text-gray-500">Tap to upload a photo of your ID</p>
               <p className="text-xs text-gray-400 mt-1">JPG or PNG, up to 8MB</p>
             </button>
@@ -173,7 +174,7 @@ export default function VerifyKyc() {
         {file && !scanned && (
           <button onClick={scan} disabled={scanning}
             className="w-full bg-brand-500 hover:bg-brand-600 disabled:opacity-60 text-white font-medium py-2.5 rounded-lg text-sm transition-colors">
-            {scanning ? 'Reading your ID…' : '✨ Scan ID & auto-fill details'}
+            {scanning ? 'Reading your ID…' : <><Sparkles size={15} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Scan ID & auto-fill details</>}
           </button>
         )}
 
@@ -196,7 +197,7 @@ export default function VerifyKyc() {
           </button>
         )}
 
-        <p className="text-xs text-gray-400 text-center">🔒 Your ID is stored securely and only seen by our verification team.</p>
+        <p className="text-xs text-gray-400 text-center"><Lock size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Your ID is stored securely and only seen by our verification team.</p>
       </div>
     </Shell>
   )

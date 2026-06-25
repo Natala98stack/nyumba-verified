@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { Home, Building2, BellRing } from 'lucide-react'
 
 const ROLES = [
-  { id: 'tenant', label: 'Tenant', desc: 'Looking for a place to rent', icon: '🏠' },
-  { id: 'landlord', label: 'Landlord', desc: 'Listing long-term rentals', icon: '🏢' },
-  { id: 'bnb_host', label: 'BnB / Stay', desc: 'Short-stay & staycation host', icon: '🛎️' },
+  { id: 'tenant', label: 'Tenant', desc: 'Looking for a place to rent', icon: Home },
+  { id: 'landlord', label: 'Landlord', desc: 'Listing long-term rentals', icon: Building2 },
+  { id: 'bnb_host', label: 'BnB / Stay', desc: 'Short-stay & staycation host', icon: BellRing },
 ]
 
 export default function SignUp() {
@@ -44,10 +45,10 @@ export default function SignUp() {
               <h2 className="text-xl font-semibold text-gray-800 mb-1">Create account</h2>
               <p className="text-gray-500 text-sm mb-6">Choose how you will use the platform</p>
               <div className="space-y-3">
-                {ROLES.map(({ id, label, desc, icon }) => (
+                {ROLES.map(({ id, label, desc, icon: Icon }) => (
                   <button key={id} onClick={() => { setRole(id); setStep(2) }}
                     className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-gray-100 hover:border-brand-500 hover:bg-brand-50 transition-all text-left">
-                    <span className="text-2xl">{icon}</span>
+                    <span className="text-brand-600"><Icon size={26} /></span>
                     <div>
                       <p className="font-medium text-gray-800">{label}</p>
                       <p className="text-sm text-gray-500">{desc}</p>

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { notify } from '../lib/notify'
+import { Home, MapPin, BedDouble, ShowerHead, BadgeCheck, AlertTriangle, Flag, PartyPopper, Clock, ScanLine, Lock, CheckCircle2 } from 'lucide-react'
 
 export default function ListingDetail() {
   const { id } = useParams()
@@ -84,7 +85,7 @@ export default function ListingDetail() {
         <div className="h-64 bg-gradient-to-br from-brand-50 to-brand-100 rounded-2xl flex items-center justify-center mb-6 overflow-hidden">
           {listing.photos?.[0]
             ? <img src={listing.photos[0]} alt={listing.title} className="w-full h-full object-cover" />
-            : <span className="text-7xl">🏠</span>}
+            : <Home size={72} className="text-gray-300" />}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -96,7 +97,7 @@ export default function ListingDetail() {
                   {listing.type === 'bnb' ? 'BnB' : 'Rental'}
                 </span>
               </div>
-              {listing.location_name && <p className="text-gray-400 text-sm">📍 {listing.location_name}</p>}
+              {listing.location_name && <p className="text-gray-400 text-sm"><MapPin size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 3 }} />{listing.location_name}</p>}
             </div>
 
             <div className="flex gap-6">
@@ -104,8 +105,8 @@ export default function ListingDetail() {
                 <p className="text-2xl font-bold text-brand-600">KSh {listing.price?.toLocaleString()}</p>
                 <p className="text-xs text-gray-400">per {listing.type === 'bnb' ? 'night' : 'month'}</p>
               </div>
-              {listing.bedrooms && <div className="text-center"><p className="text-2xl">🛏</p><p className="text-xs text-gray-400">{listing.bedrooms} bed{listing.bedrooms > 1 ? 's' : ''}</p></div>}
-              {listing.bathrooms && <div className="text-center"><p className="text-2xl">🚿</p><p className="text-xs text-gray-400">{listing.bathrooms} bath{listing.bathrooms > 1 ? 's' : ''}</p></div>}
+              {listing.bedrooms && <div className="text-center"><BedDouble size={22} className="mx-auto text-gray-500" /><p className="text-xs text-gray-400">{listing.bedrooms} bed{listing.bedrooms > 1 ? 's' : ''}</p></div>}
+              {listing.bathrooms && <div className="text-center"><ShowerHead size={22} className="mx-auto text-gray-500" /><p className="text-xs text-gray-400">{listing.bathrooms} bath{listing.bathrooms > 1 ? 's' : ''}</p></div>}
             </div>
 
             {listing.description && (
@@ -124,14 +125,14 @@ export default function ListingDetail() {
                 <div>
                   <p className="font-medium text-gray-800 text-sm">{listing.profiles?.full_name}</p>
                   {listing.profiles?.kyc_status === 'verified'
-                    ? <p className="text-xs text-green-600">✅ Identity verified</p>
-                    : <p className="text-xs text-yellow-600">⚠️ Not yet verified</p>}
+                    ? <p className="text-xs text-green-600"><BadgeCheck size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 3 }} />Identity verified</p>
+                    : <p className="text-xs text-yellow-600"><AlertTriangle size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 3 }} />Not yet verified</p>}
                 </div>
               </div>
               {profile && profile.id !== listing.owner_id && (
                 <button onClick={() => setReportOpen(true)}
                   className="mt-3 text-xs text-gray-400 hover:text-red-500 transition-colors">
-                  🚩 Report this landlord
+                  <Flag size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Report this landlord
                 </button>
               )}
             </div>
@@ -140,7 +141,7 @@ export default function ListingDetail() {
           <div className="bg-white rounded-xl border border-gray-100 p-4 h-fit">
             {booked ? (
               <div className="text-center py-4">
-                <p className="text-3xl mb-2">🎉</p>
+                <PartyPopper size={34} className="mx-auto mb-2 text-green-500" />
                 <p className="font-semibold text-gray-800">Viewing booked!</p>
                 <p className="text-sm text-gray-500 mt-1">KSh 500 viewing fee held in escrow until your visit is confirmed.</p>
                 <Link to="/my-bookings" className="mt-3 inline-block text-sm text-brand-600 underline">View my bookings</Link>
@@ -148,13 +149,13 @@ export default function ListingDetail() {
             ) : profile?.kyc_status !== 'verified' ? (
               profile?.kyc_status === 'submitted' ? (
                 <div className="text-center py-4">
-                  <div className="w-12 h-12 mx-auto rounded-xl bg-amber-50 flex items-center justify-center text-2xl mb-3">⏳</div>
+                  <div className="w-12 h-12 mx-auto rounded-xl bg-amber-50 flex items-center justify-center mb-3"><Clock size={24} className="text-amber-500" /></div>
                   <h3 className="font-semibold text-gray-800">Verification under review</h3>
                   <p className="text-sm text-gray-500 mt-1">We're checking your ID. You'll be able to book viewings as soon as you're approved — usually within 24 hours.</p>
                 </div>
               ) : (
                 <div className="text-center py-4">
-                  <div className="w-12 h-12 mx-auto rounded-xl bg-amber-50 flex items-center justify-center text-2xl mb-3">🪪</div>
+                  <div className="w-12 h-12 mx-auto rounded-xl bg-amber-50 flex items-center justify-center mb-3"><ScanLine size={24} className="text-amber-500" /></div>
                   <h3 className="font-semibold text-gray-800">Verify to book</h3>
                   <p className="text-sm text-gray-500 mt-1 mb-4">For everyone's safety, you need a verified identity before you can book a viewing.</p>
                   <Link to="/verify-kyc" className="block w-full bg-brand-500 hover:bg-brand-600 text-white font-medium py-2.5 rounded-lg text-sm transition-colors">
@@ -176,7 +177,7 @@ export default function ListingDetail() {
                   className="w-full bg-brand-500 hover:bg-brand-600 disabled:opacity-60 text-white font-medium py-2.5 rounded-lg text-sm transition-colors">
                   {booking ? 'Booking…' : 'Book viewing — KSh 500'}
                 </button>
-                <p className="text-xs text-gray-400 text-center mt-2">🔒 Payment held safely in escrow</p>
+                <p className="text-xs text-gray-400 text-center mt-2"><Lock size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Payment held safely in escrow</p>
               </>
             )}
           </div>
@@ -189,7 +190,7 @@ export default function ListingDetail() {
           <div onClick={e => e.stopPropagation()} className="bg-white rounded-2xl w-full max-w-md p-6">
             {reportDone ? (
               <div className="text-center py-4">
-                <p className="text-4xl mb-2">✅</p>
+                <CheckCircle2 size={40} className="mx-auto mb-2 text-green-500" />
                 <h3 className="font-semibold text-gray-800">Report submitted</h3>
                 <p className="text-sm text-gray-500 mt-1">Thank you. Our team has been notified and will review this.</p>
                 <button onClick={() => { setReportOpen(false); setReportDone(false); setReportCat(''); setReportDetails('') }}

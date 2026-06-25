@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import AdminLayout from '../components/shared/AdminLayout'
+import { ScanLine, Check, X } from 'lucide-react'
 
 export default function AdminKyc() {
   const [subs, setSubs] = useState([])
@@ -40,7 +41,7 @@ export default function AdminKyc() {
         <div className="text-center py-20 text-gray-400">Loading…</div>
       ) : subs.length === 0 ? (
         <div className="text-center py-20">
-          <p className="text-4xl mb-4">🪪</p>
+          <ScanLine size={44} strokeWidth={1.5} className="mx-auto mb-4 text-gray-300" />
           <p className="text-gray-500 font-medium">No IDs waiting for review</p>
         </div>
       ) : (
@@ -74,11 +75,11 @@ export default function AdminKyc() {
                   <div className="mt-auto pt-4 flex gap-2">
                     <button onClick={() => decide(u.id, 'verified')}
                       className="flex-1 text-sm bg-green-100 text-green-700 hover:bg-green-200 px-3 py-2 rounded-lg font-medium transition-colors">
-                      ✅ Approve
+                      <Check size={15} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Approve
                     </button>
                     <button onClick={() => decide(u.id, 'rejected')}
                       className="flex-1 text-sm bg-red-100 text-red-700 hover:bg-red-200 px-3 py-2 rounded-lg font-medium transition-colors">
-                      ❌ Reject
+                      <X size={15} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Reject
                     </button>
                   </div>
                 </div>

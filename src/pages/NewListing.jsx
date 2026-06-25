@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
+import { Clock, ScanLine } from 'lucide-react'
 
 export default function NewListing() {
   const { user, profile } = useAuth()
@@ -46,16 +47,16 @@ export default function NewListing() {
         {!verified ? (
           profile?.kyc_status === 'submitted' ? (
             <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
-              <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-50 flex items-center justify-center text-3xl mb-4">⏳</div>
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-50 flex items-center justify-center mb-4"><Clock size={30} className="text-amber-500" /></div>
               <h2 className="font-semibold text-gray-800 text-lg">Verification under review</h2>
               <p className="text-sm text-gray-500 mt-2">We're checking your ID. You'll be able to post listings as soon as you're approved — usually within 24 hours.</p>
               <Link to="/dashboard" className="mt-4 inline-block text-sm text-brand-600 underline">Back to dashboard</Link>
             </div>
           ) : (
             <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
-              <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-50 flex items-center justify-center text-3xl mb-4">🪪</div>
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-50 flex items-center justify-center mb-4"><ScanLine size={30} className="text-amber-500" /></div>
               <h2 className="font-semibold text-gray-800 text-lg">Verify to post a listing</h2>
-              <p className="text-sm text-gray-500 mt-2 mb-5">NyumbaVerified is built on trust — landlords verify their identity before posting. It's quick, and your listings get a ✅ verified badge that earns more bookings.</p>
+              <p className="text-sm text-gray-500 mt-2 mb-5">NyumbaVerified is built on trust — landlords verify their identity before posting. It's quick, and your listings get a verified badge that earns more bookings.</p>
               <Link to="/verify-kyc" className="block w-full bg-brand-500 hover:bg-brand-600 text-white font-medium py-2.5 rounded-lg text-sm transition-colors">
                 Verify my identity →
               </Link>

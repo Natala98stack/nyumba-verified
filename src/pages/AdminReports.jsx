@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import AdminLayout from '../components/shared/AdminLayout'
+import { Clock, Search, ShieldAlert, Check, CheckCircle2 } from 'lucide-react'
 
 export default function AdminReports() {
   const [reports, setReports] = useState([])
@@ -44,10 +45,10 @@ export default function AdminReports() {
   }
 
   const STATUS_LABEL = {
-    open:           '⏳ Open',
-    investigating:  '🔍 Investigating',
-    resolved_fraud: '🚨 Fraud confirmed',
-    resolved_false: '✅ False report',
+    open:           <><Clock size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Open</>,
+    investigating:  <><Search size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Investigating</>,
+    resolved_fraud: <><ShieldAlert size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Fraud confirmed</>,
+    resolved_false: <><Check size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />False report</>,
   }
 
   return (
@@ -56,7 +57,7 @@ export default function AdminReports() {
         <div className="text-center py-20 text-gray-400">Loading…</div>
       ) : reports.length === 0 ? (
         <div className="text-center py-20">
-          <p className="text-4xl mb-4">✅</p>
+          <CheckCircle2 size={44} className="mx-auto mb-4 text-green-300" />
           <p className="text-gray-500 font-medium">No fraud reports yet</p>
         </div>
       ) : (
@@ -101,15 +102,15 @@ export default function AdminReports() {
                 <div className="flex gap-2 flex-wrap">
                   <button onClick={() => updateStatus(report.id, 'investigating')}
                     className="text-xs bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1.5 rounded-lg transition-colors">
-                    🔍 Start investigating
+                    <Search size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Start investigating
                   </button>
                   <button onClick={() => updateStatus(report.id, 'resolved_fraud')}
                     className="text-xs bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1.5 rounded-lg transition-colors">
-                    🚨 Confirm fraud + ban user
+                    <ShieldAlert size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Confirm fraud + ban user
                   </button>
                   <button onClick={() => updateStatus(report.id, 'resolved_false')}
                     className="text-xs bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg transition-colors">
-                    ✅ Mark as false report
+                    <Check size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Mark as false report
                   </button>
                 </div>
               )}
@@ -118,11 +119,11 @@ export default function AdminReports() {
                 <div className="flex gap-2">
                   <button onClick={() => updateStatus(report.id, 'resolved_fraud')}
                     className="text-xs bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1.5 rounded-lg transition-colors">
-                    🚨 Confirm fraud + ban user
+                    <ShieldAlert size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Confirm fraud + ban user
                   </button>
                   <button onClick={() => updateStatus(report.id, 'resolved_false')}
                     className="text-xs bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg transition-colors">
-                    ✅ Mark as false report
+                    <Check size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Mark as false report
                   </button>
                 </div>
               )}

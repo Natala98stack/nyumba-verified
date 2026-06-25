@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { notify } from '../lib/notify'
 import AdminLayout from '../components/shared/AdminLayout'
+import { Calendar, MapPin, Wallet, Lock } from 'lucide-react'
 
 export default function AdminViewings() {
   const [viewings, setViewings] = useState([])
@@ -55,7 +56,7 @@ export default function AdminViewings() {
         <div className="text-center py-20 text-gray-400">Loading…</div>
       ) : viewings.length === 0 ? (
         <div className="text-center py-20">
-          <p className="text-4xl mb-4">📅</p>
+          <Calendar size={44} className="mx-auto mb-4 text-gray-300" />
           <p className="text-gray-500 font-medium">No viewings yet</p>
         </div>
       ) : (
@@ -65,14 +66,14 @@ export default function AdminViewings() {
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <p className="font-medium text-gray-800">{v.listings?.title}</p>
-                  {v.listings?.location_name && <p className="text-xs text-gray-400">📍 {v.listings.location_name}</p>}
+                  {v.listings?.location_name && <p className="text-xs text-gray-400"><MapPin size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 3 }} />{v.listings.location_name}</p>}
                   <p className="text-xs text-gray-400 mt-1">
                     {new Date(v.scheduled_at).toLocaleDateString('en-KE', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
                 <div className="flex gap-2">
                   <span className={`text-xs px-2 py-1 rounded-full capitalize ${STATUS_STYLE[v.status]}`}>{v.status}</span>
-                  <span className={`text-xs px-2 py-1 rounded-full capitalize ${ESCROW_STYLE[v.escrow_status]}`}>💰 {v.escrow_status}</span>
+                  <span className={`text-xs px-2 py-1 rounded-full capitalize ${ESCROW_STYLE[v.escrow_status]}`}><Wallet size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />{v.escrow_status}</span>
                 </div>
               </div>
 
@@ -104,7 +105,7 @@ export default function AdminViewings() {
                       </button>
                       <button onClick={() => updateEscrow(v.id, 'frozen')}
                         className="text-xs bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1.5 rounded-lg transition-colors">
-                        🔒 Freeze
+                        <Lock size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />Freeze
                       </button>
                     </>
                   )}

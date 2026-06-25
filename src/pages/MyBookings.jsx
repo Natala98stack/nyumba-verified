@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
+import { Calendar, MapPin } from 'lucide-react'
 
 const STATUS_STYLE = {
   pending:   'bg-yellow-100 text-yellow-700',
@@ -43,7 +44,7 @@ export default function MyBookings() {
           <div className="text-center py-20 text-gray-400">Loading…</div>
         ) : bookings.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-4xl mb-4">📅</p>
+            <Calendar size={44} className="mx-auto mb-4 text-gray-300" />
             <p className="text-gray-500 font-medium">No bookings yet</p>
             <Link to="/listings" className="mt-3 inline-block text-brand-600 underline text-sm">
               Browse listings
@@ -57,7 +58,7 @@ export default function MyBookings() {
                   <div>
                     <h3 className="font-medium text-gray-800">{booking.listings?.title}</h3>
                     {booking.listings?.location_name && (
-                      <p className="text-xs text-gray-400 mt-0.5">📍 {booking.listings.location_name}</p>
+                      <p className="text-xs text-gray-400 mt-0.5"><MapPin size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 3 }} />{booking.listings.location_name}</p>
                     )}
                     <p className="text-xs text-gray-400 mt-1">
                       Viewing: {new Date(booking.scheduled_at).toLocaleDateString('en-KE', {

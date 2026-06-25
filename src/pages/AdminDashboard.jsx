@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
+import { LayoutDashboard, Users, ClipboardList, Calendar, ShieldAlert, ScanLine, Home, Bell, Lightbulb, User, LogOut, Menu } from 'lucide-react'
 
 const G = '#1d9e75'
 const GD = '#0f6e56'
@@ -64,32 +65,32 @@ export default function AdminDashboard() {
   const SIDEBAR_W = 240
 
   const NAV = [
-    { icon: '📊', label: 'Dashboard', to: '/admin' },
-    { icon: '👥', label: 'Users', to: '/admin/users' },
-    { icon: '📋', label: 'Listings', to: '/admin/listings' },
-    { icon: '📅', label: 'Viewings', to: '/admin/viewings' },
-    { icon: '🚨', label: 'Fraud reports', to: '/admin/reports' },
-    { icon: '🪪', label: 'KYC review', to: '/admin/kyc' },
+    { icon: LayoutDashboard, label: 'Dashboard', to: '/admin' },
+    { icon: Users, label: 'Users', to: '/admin/users' },
+    { icon: ClipboardList, label: 'Listings', to: '/admin/listings' },
+    { icon: Calendar, label: 'Viewings', to: '/admin/viewings' },
+    { icon: ShieldAlert, label: 'Fraud reports', to: '/admin/reports' },
+    { icon: ScanLine, label: 'KYC review', to: '/admin/kyc' },
   ]
 
   const STATS = [
-    { icon: '👥', label: 'Total users', value: stats.users, bg: 'linear-gradient(135deg, #eef3ff, #dce8ff)', accent: '#3b5bdb', sub: 'Registered' },
-    { icon: '🏠', label: 'Listings', value: stats.listings, bg: `linear-gradient(135deg, ${GL}, #d0ede3)`, accent: G, sub: 'On platform' },
-    { icon: '📅', label: 'Viewings', value: stats.viewings, bg: 'linear-gradient(135deg, #f3eeff, #e4dcff)', accent: '#7048e8', sub: 'Total booked' },
-    { icon: '🚨', label: 'Fraud reports', value: stats.reports, bg: 'linear-gradient(135deg, #fff0f0, #ffe0e0)', accent: '#c92a2a', sub: 'All time' },
+    { icon: Users, label: 'Total users', value: stats.users, bg: 'linear-gradient(135deg, #eef3ff, #dce8ff)', accent: '#3b5bdb', sub: 'Registered' },
+    { icon: Home, label: 'Listings', value: stats.listings, bg: `linear-gradient(135deg, ${GL}, #d0ede3)`, accent: G, sub: 'On platform' },
+    { icon: Calendar, label: 'Viewings', value: stats.viewings, bg: 'linear-gradient(135deg, #f3eeff, #e4dcff)', accent: '#7048e8', sub: 'Total booked' },
+    { icon: ShieldAlert, label: 'Fraud reports', value: stats.reports, bg: 'linear-gradient(135deg, #fff0f0, #ffe0e0)', accent: '#c92a2a', sub: 'All time' },
   ]
 
   const ACTIONS = [
-    { icon: '👥', title: 'Manage users', desc: 'View, verify or ban users', to: '/admin/users', gradient: 'linear-gradient(135deg, #eef3ff 0%, #dce8ff 100%)', accent: '#3b5bdb', tag: 'Users' },
-    { icon: '📋', title: 'Manage listings', desc: 'Approve or reject properties', to: '/admin/listings', gradient: `linear-gradient(135deg, ${GL} 0%, #d0ede3 100%)`, accent: G, tag: 'Manage' },
-    { icon: '📅', title: 'Viewings', desc: 'Monitor bookings & escrow', to: '/admin/viewings', gradient: 'linear-gradient(135deg, #f3eeff 0%, #e4dcff 100%)', accent: '#7048e8', tag: 'Monitor' },
-    { icon: '🚨', title: 'Fraud reports', desc: 'Investigate and resolve', to: '/admin/reports', gradient: 'linear-gradient(135deg, #fff0f0 0%, #ffe0e0 100%)', accent: '#c92a2a', tag: 'Review' },
-    { icon: '🪪', title: 'KYC review', desc: 'Approve or reject ID uploads', to: '/admin/kyc', gradient: 'linear-gradient(135deg, #fff8e1 0%, #ffeebb 100%)', accent: '#e67700', tag: 'Verify' },
+    { icon: Users, title: 'Manage users', desc: 'View, verify or ban users', to: '/admin/users', gradient: 'linear-gradient(135deg, #eef3ff 0%, #dce8ff 100%)', accent: '#3b5bdb', tag: 'Users' },
+    { icon: ClipboardList, title: 'Manage listings', desc: 'Approve or reject properties', to: '/admin/listings', gradient: `linear-gradient(135deg, ${GL} 0%, #d0ede3 100%)`, accent: G, tag: 'Manage' },
+    { icon: Calendar, title: 'Viewings', desc: 'Monitor bookings & escrow', to: '/admin/viewings', gradient: 'linear-gradient(135deg, #f3eeff 0%, #e4dcff 100%)', accent: '#7048e8', tag: 'Monitor' },
+    { icon: ShieldAlert, title: 'Fraud reports', desc: 'Investigate and resolve', to: '/admin/reports', gradient: 'linear-gradient(135deg, #fff0f0 0%, #ffe0e0 100%)', accent: '#c92a2a', tag: 'Review' },
+    { icon: ScanLine, title: 'KYC review', desc: 'Approve or reject ID uploads', to: '/admin/kyc', gradient: 'linear-gradient(135deg, #fff8e1 0%, #ffeebb 100%)', accent: '#e67700', tag: 'Verify' },
   ]
 
   const attention = [
-    { icon: '🪪', text: 'IDs waiting for review', count: stats.kyc, to: '/admin/kyc' },
-    { icon: '🚨', text: 'Open fraud reports', count: stats.openReports, to: '/admin/reports' },
+    { icon: ScanLine, text: 'IDs waiting for review', count: stats.kyc, to: '/admin/kyc' },
+    { icon: ShieldAlert, text: 'Open fraud reports', count: stats.openReports, to: '/admin/reports' },
   ]
 
   return (
@@ -144,7 +145,7 @@ export default function AdminDashboard() {
                 return (
                   <Link key={item.to} to={item.to} className="nav-lnk" onClick={() => setCurrentPath(item.to)}
                     style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, textDecoration: 'none', marginBottom: 2, background: active ? GL : 'transparent', color: active ? GD : '#555', fontWeight: active ? 700 : 500, fontSize: 14, borderLeft: active ? `3px solid ${G}` : '3px solid transparent' }}>
-                    <span style={{ fontSize: 17 }}>{item.icon}</span>
+                    <item.icon size={18} style={{ flexShrink: 0 }} />
                     <span style={{ flex: 1 }}>{item.label}</span>
                     {item.to === '/admin/kyc' && stats.kyc > 0 && (
                       <span style={{ background: '#e8590c', color: '#fff', fontSize: 10, fontWeight: 700, borderRadius: 20, padding: '1px 7px' }}>{stats.kyc}</span>
@@ -157,11 +158,11 @@ export default function AdminDashboard() {
             {/* Footer: switch view + sign out */}
             <div style={{ padding: '10px 14px 14px', borderTop: '1px solid #f0f4f1' }}>
               <Link to="/dashboard" className="nav-lnk" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, textDecoration: 'none', color: '#555', fontSize: 14, fontWeight: 500, marginBottom: 2 }}>
-                <span style={{ fontSize: 17 }}>👤</span>
+                <User size={18} style={{ flexShrink: 0 }} />
                 <span>Switch to user view</span>
               </Link>
               <button onClick={signOut} className="signout-btn" style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, border: 'none', background: 'transparent', color: '#888', fontSize: 14, fontWeight: 500, cursor: 'pointer', textAlign: 'left' }}>
-                <span style={{ fontSize: 17 }}>🚪</span>
+                <LogOut size={18} style={{ flexShrink: 0 }} />
                 <span>Sign out</span>
               </button>
             </div>
@@ -174,9 +175,9 @@ export default function AdminDashboard() {
         {/* Top bar */}
         <header style={{ background: '#fff', borderBottom: '1px solid #eef2ef', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 30, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {mobile && <button onClick={() => setSidebarOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, padding: 4, color: '#555' }}>☰</button>}
+            {mobile && <button onClick={() => setSidebarOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, padding: 4, color: '#555', display: 'flex' }}><Menu size={22} /></button>}
             <div>
-              <p style={{ fontWeight: 700, fontSize: 15, color: '#0a0a0a', margin: 0 }}>{greeting}, {firstName} 👋</p>
+              <p style={{ fontWeight: 700, fontSize: 15, color: '#0a0a0a', margin: 0 }}>{greeting}, {firstName}</p>
               <p style={{ fontSize: 12, color: '#aaa', margin: 0 }}>Platform overview & management</p>
             </div>
           </div>
@@ -197,7 +198,7 @@ export default function AdminDashboard() {
           {/* Attention banner */}
           {stats.kyc > 0 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', background: '#fff8e1', borderRadius: 14, border: '1px solid #fde68a', marginBottom: 24, animation: 'fadeUp 0.4s ease', flexWrap: 'wrap' }}>
-              <div style={{ width: 40, height: 40, background: '#fff', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>🪪</div>
+              <div style={{ width: 40, height: 40, background: '#fff', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}><ScanLine size={22} color="#f59e0b" /></div>
               <div style={{ flex: 1 }}>
                 <p style={{ fontWeight: 700, fontSize: 14, color: '#92400e', margin: '0 0 2px' }}>{stats.kyc} ID {stats.kyc === 1 ? 'submission is' : 'submissions are'} waiting for review</p>
                 <p style={{ fontSize: 13, color: '#b45309', margin: 0 }}>Approve or reject pending identity verifications.</p>
@@ -211,7 +212,7 @@ export default function AdminDashboard() {
             {STATS.map((s, i) => (
               <div key={i} style={{ background: '#fff', borderRadius: 16, padding: '20px 22px', border: '1px solid #eef2ef', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', animation: `fadeUp 0.4s ease ${i * 0.08}s both` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
-                  <div style={{ width: 44, height: 44, background: s.bg, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>{s.icon}</div>
+                  <div style={{ width: 44, height: 44, background: s.bg, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', }}><s.icon size={22} color={s.accent} strokeWidth={2.2} /></div>
                   <span style={{ fontSize: 10, color: '#bbb', fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase' }}>{s.sub}</span>
                 </div>
                 <p style={{ fontSize: 32, fontWeight: 900, color: s.accent, margin: '0 0 4px', letterSpacing: -1 }}>{s.value}</p>
@@ -230,7 +231,7 @@ export default function AdminDashboard() {
               {ACTIONS.map((a, i) => (
                 <Link key={i} to={a.to} className="action-card" style={{ textDecoration: 'none', background: '#fff', borderRadius: 16, overflow: 'hidden', border: '1px solid #eef2ef', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', animation: `fadeUp 0.4s ease ${i * 0.07 + 0.1}s both` }}>
                   <div style={{ height: 80, background: a.gradient, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, position: 'relative' }}>
-                    {a.icon}
+                    <a.icon size={30} color={a.accent} strokeWidth={2} />
                     <span style={{ position: 'absolute', top: 10, right: 10, background: a.accent, color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 20, letterSpacing: 0.5 }}>{a.tag}</span>
                   </div>
                   <div style={{ padding: '14px 16px' }}>
@@ -248,25 +249,25 @@ export default function AdminDashboard() {
             {/* Needs attention */}
             <div style={{ background: '#fff', borderRadius: 16, padding: '22px 24px', border: '1px solid #eef2ef', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                <div style={{ width: 36, height: 36, background: '#fff5f0', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>🔔</div>
+                <div style={{ width: 36, height: 36, background: '#fff5f0', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', }}><Bell size={18} color="#e8590c" /></div>
                 <h3 style={{ fontWeight: 700, fontSize: 14, color: '#0a0a0a', margin: 0 }}>Needs attention</h3>
               </div>
               {attention.map((item, i) => (
                 <Link key={i} to={item.to} className="attn-row" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 8px', borderRadius: 8, borderBottom: i < attention.length - 1 ? '1px solid #f5f5f5' : 'none', textDecoration: 'none' }}>
-                  <span style={{ fontSize: 15 }}>{item.icon}</span>
+                  <item.icon size={16} color="#e8590c" style={{ flexShrink: 0 }} />
                   <span style={{ fontSize: 13, color: '#555', flex: 1 }}>{item.text}</span>
                   <span style={{ fontSize: 13, fontWeight: 800, color: item.count > 0 ? '#e8590c' : '#bbb' }}>{item.count}</span>
                 </Link>
               ))}
               {stats.kyc === 0 && stats.openReports === 0 && (
-                <p style={{ fontSize: 12, color: '#aaa', margin: '8px 0 0', textAlign: 'center' }}>All clear — nothing pending 🎉</p>
+                <p style={{ fontSize: 12, color: '#aaa', margin: '8px 0 0', textAlign: 'center' }}>All clear — nothing pending</p>
               )}
             </div>
 
             {/* Admin tips */}
             <div style={{ background: 'linear-gradient(135deg, #f7fdf9 0%, #edfaf3 100%)', borderRadius: 16, padding: '22px 24px', border: `1px solid ${G}20` }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                <div style={{ width: 36, height: 36, background: GL, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>💡</div>
+                <div style={{ width: 36, height: 36, background: GL, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', }}><Lightbulb size={18} color={GD} /></div>
                 <h3 style={{ fontWeight: 700, fontSize: 14, color: '#0a0a0a', margin: 0 }}>Admin tips</h3>
               </div>
               {[

@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
+import {
+  LayoutDashboard, Search, Calendar, CalendarCheck, ShieldCheck, Plus,
+  ClipboardList, LogOut, Menu, Home, Star, Shield, Lock, BadgeCheck,
+  ShieldAlert, Lightbulb, Check,
+} from 'lucide-react'
 
 const G = '#1d9e75'
 const GD = '#0f6e56'
@@ -74,32 +79,32 @@ export default function Dashboard() {
   const kyc = KYC_STATUS[profile.kyc_status] || KYC_STATUS.pending
 
   const TENANT_NAV = [
-    { icon: '🏠', label: 'Dashboard', to: '/dashboard' },
-    { icon: '🔍', label: 'Browse listings', to: '/listings' },
-    { icon: '📅', label: 'My bookings', to: '/my-bookings' },
-    { icon: '🪪', label: 'Verify identity', to: '/verify-kyc' },
+    { icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard' },
+    { icon: Search, label: 'Browse listings', to: '/listings' },
+    { icon: Calendar, label: 'My bookings', to: '/my-bookings' },
+    { icon: ShieldCheck, label: 'Verify identity', to: '/verify-kyc' },
   ]
   const LANDLORD_NAV = [
-    { icon: '🏠', label: 'Dashboard', to: '/dashboard' },
-    { icon: '➕', label: 'Add listing', to: '/listings/new' },
-    { icon: '📋', label: 'My listings', to: '/my-listings' },
-    { icon: '📅', label: 'Viewings', to: '/my-bookings' },
-    { icon: '🪪', label: 'Verify identity', to: '/verify-kyc' },
+    { icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard' },
+    { icon: Plus, label: 'Add listing', to: '/listings/new' },
+    { icon: ClipboardList, label: 'My listings', to: '/my-listings' },
+    { icon: Calendar, label: 'Viewings', to: '/my-bookings' },
+    { icon: ShieldCheck, label: 'Verify identity', to: '/verify-kyc' },
   ]
   const NAV = isTenant ? TENANT_NAV : LANDLORD_NAV
 
   const TENANT_ACTIONS = [
-    { icon: '🔍', title: 'Browse listings', desc: 'Find your next verified home', to: '/listings', gradient: `linear-gradient(135deg, ${GL} 0%, #d0ede3 100%)`, accent: G, tag: 'Explore' },
-    { icon: '📅', title: 'My bookings', desc: 'Track your viewing requests', to: '/my-bookings', gradient: 'linear-gradient(135deg, #eef3ff 0%, #dce8ff 100%)', accent: '#3b5bdb', tag: 'Track' },
-    { icon: '🚨', title: 'Report fraud', desc: 'Report a suspicious agent', to: '/listings', gradient: 'linear-gradient(135deg, #fff0f0 0%, #ffe0e0 100%)', accent: '#c92a2a', tag: 'Report' },
-    { icon: '🪪', title: 'Verify identity', desc: 'Upload your national ID', to: '/verify-kyc', gradient: 'linear-gradient(135deg, #fff8e1 0%, #ffeebb 100%)', accent: '#e67700', tag: 'Important' },
+    { icon: Search, title: 'Browse listings', desc: 'Find your next verified home', to: '/listings', gradient: `linear-gradient(135deg, ${GL} 0%, #d0ede3 100%)`, accent: G, tag: 'Explore' },
+    { icon: Calendar, title: 'My bookings', desc: 'Track your viewing requests', to: '/my-bookings', gradient: 'linear-gradient(135deg, #eef3ff 0%, #dce8ff 100%)', accent: '#3b5bdb', tag: 'Track' },
+    { icon: ShieldAlert, title: 'Report fraud', desc: 'Report a suspicious agent', to: '/listings', gradient: 'linear-gradient(135deg, #fff0f0 0%, #ffe0e0 100%)', accent: '#c92a2a', tag: 'Report' },
+    { icon: ShieldCheck, title: 'Verify identity', desc: 'Upload your national ID', to: '/verify-kyc', gradient: 'linear-gradient(135deg, #fff8e1 0%, #ffeebb 100%)', accent: '#e67700', tag: 'Important' },
   ]
 
   const LANDLORD_ACTIONS = [
-    { icon: '➕', title: 'Add new listing', desc: 'Post a vacant property', to: '/listings/new', gradient: `linear-gradient(135deg, ${GL} 0%, #d0ede3 100%)`, accent: G, tag: 'New' },
-    { icon: '📋', title: 'My listings', desc: 'Manage your properties', to: '/my-listings', gradient: 'linear-gradient(135deg, #eef3ff 0%, #dce8ff 100%)', accent: '#3b5bdb', tag: 'Manage' },
-    { icon: '📅', title: 'Viewings', desc: 'Track booking requests', to: '/my-bookings', gradient: 'linear-gradient(135deg, #f3fff3 0%, #dcf5dc 100%)', accent: '#2f9e44', tag: 'Monitor' },
-    { icon: '🪪', title: 'Verify identity', desc: 'Get the verified badge', to: '/verify-kyc', gradient: 'linear-gradient(135deg, #fff8e1 0%, #ffeebb 100%)', accent: '#e67700', tag: 'Important' },
+    { icon: Plus, title: 'Add new listing', desc: 'Post a vacant property', to: '/listings/new', gradient: `linear-gradient(135deg, ${GL} 0%, #d0ede3 100%)`, accent: G, tag: 'New' },
+    { icon: ClipboardList, title: 'My listings', desc: 'Manage your properties', to: '/my-listings', gradient: 'linear-gradient(135deg, #eef3ff 0%, #dce8ff 100%)', accent: '#3b5bdb', tag: 'Manage' },
+    { icon: Calendar, title: 'Viewings', desc: 'Track booking requests', to: '/my-bookings', gradient: 'linear-gradient(135deg, #f3fff3 0%, #dcf5dc 100%)', accent: '#2f9e44', tag: 'Monitor' },
+    { icon: ShieldCheck, title: 'Verify identity', desc: 'Get the verified badge', to: '/verify-kyc', gradient: 'linear-gradient(135deg, #fff8e1 0%, #ffeebb 100%)', accent: '#e67700', tag: 'Important' },
   ]
 
   const ACTIONS = isTenant ? TENANT_ACTIONS : LANDLORD_ACTIONS
@@ -163,11 +168,12 @@ export default function Dashboard() {
               <p style={{ fontSize: 10, fontWeight: 700, color: '#ccc', letterSpacing: 1.5, textTransform: 'uppercase', padding: '0 10px', marginBottom: 8 }}>Menu</p>
               {NAV.map(item => {
                 const active = currentPath === item.to
+                const Icon = item.icon
                 return (
                   <Link key={item.to} to={item.to} className="nav-lnk"
                     onClick={() => setCurrentPath(item.to)}
                     style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, textDecoration: 'none', marginBottom: 2, background: active ? GL : 'transparent', color: active ? GD : '#555', fontWeight: active ? 700 : 500, fontSize: 14, borderLeft: active ? `3px solid ${G}` : '3px solid transparent', transition: 'all 0.15s' }}>
-                    <span style={{ fontSize: 17 }}>{item.icon}</span>
+                    <Icon size={18} strokeWidth={active ? 2.4 : 2} style={{ flexShrink: 0 }} />
                     <span>{item.label}</span>
                   </Link>
                 )
@@ -178,7 +184,7 @@ export default function Dashboard() {
             <div style={{ padding: '14px', borderTop: '1px solid #f0f4f1' }}>
               <button onClick={signOut} className="signout-btn"
                 style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, border: 'none', background: 'transparent', color: '#888', fontSize: 14, fontWeight: 500, cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
-                <span style={{ fontSize: 17 }}>🚪</span>
+                <LogOut size={18} style={{ flexShrink: 0 }} />
                 <span>Sign out</span>
               </button>
             </div>
@@ -193,10 +199,10 @@ export default function Dashboard() {
         <header style={{ background: '#fff', borderBottom: '1px solid #eef2ef', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 30, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {mobile && (
-              <button onClick={() => setSidebarOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, padding: '4px', color: '#555' }}>☰</button>
+              <button onClick={() => setSidebarOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#555', display: 'flex' }}><Menu size={22} /></button>
             )}
             <div>
-              <p style={{ fontWeight: 700, fontSize: 15, color: '#0a0a0a', margin: 0 }}>{greeting}, {firstName} 👋</p>
+              <p style={{ fontWeight: 700, fontSize: 15, color: '#0a0a0a', margin: 0 }}>{greeting}, {firstName}</p>
               <p style={{ fontSize: 12, color: '#aaa', margin: 0, textTransform: 'capitalize' }}>{profile.role?.replace('_', ' ')} Account</p>
             </div>
           </div>
@@ -217,7 +223,7 @@ export default function Dashboard() {
           {/* KYC banner */}
           {profile.kyc_status === 'pending' && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', background: '#fff8e1', borderRadius: 14, border: '1px solid #fde68a', marginBottom: 24, animation: 'fadeUp 0.4s ease', flexWrap: 'wrap' }}>
-              <div style={{ width: 40, height: 40, background: '#fff', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>🪪</div>
+              <div style={{ width: 40, height: 40, background: '#fff', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}><ShieldCheck size={22} color="#d97706" /></div>
               <div style={{ flex: 1 }}>
                 <p style={{ fontWeight: 700, fontSize: 14, color: '#92400e', margin: '0 0 2px' }}>Verify your identity to unlock all features</p>
                 <p style={{ fontSize: 13, color: '#b45309', margin: 0 }}>Upload your national ID to build trust with {isTenant ? 'landlords' : 'tenants'}.</p>
@@ -231,22 +237,25 @@ export default function Dashboard() {
           {/* Stats */}
           <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr 1fr' : `repeat(${isTenant ? 2 : 3}, 1fr)`, gap: 14, marginBottom: 28 }}>
             {(isTenant ? [
-              { icon: '📅', label: 'Bookings made', value: stats.bookings, bg: 'linear-gradient(135deg, #eef3ff, #dce8ff)', accent: '#3b5bdb', sub: 'Total viewings' },
-              { icon: '🔍', label: 'Listings available', value: '2,400+', bg: `linear-gradient(135deg, ${GL}, #d0ede3)`, accent: G, sub: 'Verified properties' },
+              { icon: CalendarCheck, label: 'Bookings made', value: stats.bookings, bg: 'linear-gradient(135deg, #eef3ff, #dce8ff)', accent: '#3b5bdb', sub: 'Total viewings' },
+              { icon: Search, label: 'Listings available', value: '2,400+', bg: `linear-gradient(135deg, ${GL}, #d0ede3)`, accent: G, sub: 'Verified properties' },
             ] : [
-              { icon: '🏠', label: 'My listings', value: stats.listings, bg: `linear-gradient(135deg, ${GL}, #d0ede3)`, accent: G, sub: 'Active properties' },
-              { icon: '📅', label: 'Viewing requests', value: stats.viewings, bg: 'linear-gradient(135deg, #eef3ff, #dce8ff)', accent: '#3b5bdb', sub: 'Total bookings' },
-              { icon: '⭐', label: 'Rating', value: '—', bg: 'linear-gradient(135deg, #fff8e1, #ffeebb)', accent: '#e67700', sub: 'After first review' },
-            ]).map((s, i) => (
-              <div key={i} style={{ background: '#fff', borderRadius: 16, padding: '20px 22px', border: '1px solid #eef2ef', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', animation: `fadeUp 0.4s ease ${i * 0.08}s both` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
-                  <div style={{ width: 44, height: 44, background: s.bg, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>{s.icon}</div>
-                  <span style={{ fontSize: 10, color: '#bbb', fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase' }}>{s.sub}</span>
+              { icon: Home, label: 'My listings', value: stats.listings, bg: `linear-gradient(135deg, ${GL}, #d0ede3)`, accent: G, sub: 'Active properties' },
+              { icon: CalendarCheck, label: 'Viewing requests', value: stats.viewings, bg: 'linear-gradient(135deg, #eef3ff, #dce8ff)', accent: '#3b5bdb', sub: 'Total bookings' },
+              { icon: Star, label: 'Rating', value: '—', bg: 'linear-gradient(135deg, #fff8e1, #ffeebb)', accent: '#e67700', sub: 'After first review' },
+            ]).map((s, i) => {
+              const Icon = s.icon
+              return (
+                <div key={i} style={{ background: '#fff', borderRadius: 16, padding: '20px 22px', border: '1px solid #eef2ef', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', animation: `fadeUp 0.4s ease ${i * 0.08}s both` }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+                    <div style={{ width: 44, height: 44, background: s.bg, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon size={22} color={s.accent} strokeWidth={2.2} /></div>
+                    <span style={{ fontSize: 10, color: '#bbb', fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase' }}>{s.sub}</span>
+                  </div>
+                  <p style={{ fontSize: 32, fontWeight: 900, color: s.accent, margin: '0 0 4px', letterSpacing: -1 }}>{s.value}</p>
+                  <p style={{ fontSize: 13, color: '#666', margin: 0, fontWeight: 500 }}>{s.label}</p>
                 </div>
-                <p style={{ fontSize: 32, fontWeight: 900, color: s.accent, margin: '0 0 4px', letterSpacing: -1 }}>{s.value}</p>
-                <p style={{ fontSize: 13, color: '#666', margin: 0, fontWeight: 500 }}>{s.label}</p>
-              </div>
-            ))}
+              )
+            })}
           </div>
 
           {/* Quick actions */}
@@ -256,20 +265,23 @@ export default function Dashboard() {
               <span style={{ fontSize: 12, color: '#bbb' }}>What would you like to do?</span>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: 14 }}>
-              {ACTIONS.map((a, i) => (
-                <Link key={i} to={a.to} className="action-card"
-                  style={{ textDecoration: 'none', background: '#fff', borderRadius: 16, overflow: 'hidden', border: '1px solid #eef2ef', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', animation: `fadeUp 0.4s ease ${i * 0.07 + 0.1}s both` }}>
-                  <div style={{ height: 80, background: a.gradient, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, position: 'relative' }}>
-                    {a.icon}
-                    <span style={{ position: 'absolute', top: 10, right: 10, background: a.accent, color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 20, letterSpacing: 0.5 }}>{a.tag}</span>
-                  </div>
-                  <div style={{ padding: '14px 16px' }}>
-                    <p style={{ fontWeight: 700, fontSize: 14, color: '#0a0a0a', margin: '0 0 4px', letterSpacing: -0.2 }}>{a.title}</p>
-                    <p style={{ fontSize: 12, color: '#999', margin: '0 0 12px', lineHeight: 1.4 }}>{a.desc}</p>
-                    <span style={{ color: a.accent, fontSize: 12, fontWeight: 700 }}>Go →</span>
-                  </div>
-                </Link>
-              ))}
+              {ACTIONS.map((a, i) => {
+                const Icon = a.icon
+                return (
+                  <Link key={i} to={a.to} className="action-card"
+                    style={{ textDecoration: 'none', background: '#fff', borderRadius: 16, overflow: 'hidden', border: '1px solid #eef2ef', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', animation: `fadeUp 0.4s ease ${i * 0.07 + 0.1}s both` }}>
+                    <div style={{ height: 80, background: a.gradient, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                      <Icon size={30} color={a.accent} strokeWidth={2} />
+                      <span style={{ position: 'absolute', top: 10, right: 10, background: a.accent, color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 20, letterSpacing: 0.5 }}>{a.tag}</span>
+                    </div>
+                    <div style={{ padding: '14px 16px' }}>
+                      <p style={{ fontWeight: 700, fontSize: 14, color: '#0a0a0a', margin: '0 0 4px', letterSpacing: -0.2 }}>{a.title}</p>
+                      <p style={{ fontSize: 12, color: '#999', margin: '0 0 12px', lineHeight: 1.4 }}>{a.desc}</p>
+                      <span style={{ color: a.accent, fontSize: 12, fontWeight: 700 }}>Go →</span>
+                    </div>
+                  </Link>
+                )
+              })}
             </div>
           </div>
 
@@ -278,26 +290,31 @@ export default function Dashboard() {
 
             <div style={{ background: '#fff', borderRadius: 16, padding: '22px 24px', border: '1px solid #eef2ef', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                <div style={{ width: 36, height: 36, background: GL, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>🛡️</div>
+                <div style={{ width: 36, height: 36, background: GL, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Shield size={18} color={GD} /></div>
                 <h3 style={{ fontWeight: 700, fontSize: 14, color: '#0a0a0a', margin: 0 }}>Your protections</h3>
               </div>
               {[
-                { icon: '🔒', text: 'Viewing fees held in escrow', ok: true },
-                { icon: '✅', text: 'Landlord identity verified', ok: profile.kyc_status === 'verified' },
-                { icon: '⭐', text: 'Rated & reviewed system', ok: true },
-                { icon: '🚨', text: 'One-tap fraud reporting', ok: true },
-              ].map((item, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 3 ? '1px solid #f5f5f5' : 'none' }}>
-                  <span style={{ fontSize: 15 }}>{item.icon}</span>
-                  <span style={{ fontSize: 13, color: '#555', flex: 1 }}>{item.text}</span>
-                  <span style={{ fontSize: 12, color: item.ok ? G : '#bbb', fontWeight: 700 }}>{item.ok ? '✓' : '—'}</span>
-                </div>
-              ))}
+                { Icon: Lock, text: 'Viewing fees held in escrow', color: G, ok: true },
+                { Icon: BadgeCheck, text: 'Landlord identity verified', color: G, ok: profile.kyc_status === 'verified' },
+                { Icon: Star, text: 'Rated & reviewed system', color: '#e67700', ok: true },
+                { Icon: ShieldAlert, text: 'One-tap fraud reporting', color: '#c92a2a', ok: true },
+              ].map((item, i) => {
+                const Icon = item.Icon
+                return (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 3 ? '1px solid #f5f5f5' : 'none' }}>
+                    <Icon size={16} color={item.color} strokeWidth={2.2} style={{ flexShrink: 0 }} />
+                    <span style={{ fontSize: 13, color: '#555', flex: 1 }}>{item.text}</span>
+                    {item.ok
+                      ? <Check size={15} color={G} strokeWidth={3} />
+                      : <span style={{ fontSize: 12, color: '#bbb', fontWeight: 700 }}>—</span>}
+                  </div>
+                )
+              })}
             </div>
 
             <div style={{ background: `linear-gradient(135deg, #f7fdf9 0%, #edfaf3 100%)`, borderRadius: 16, padding: '22px 24px', border: `1px solid ${G}20` }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                <div style={{ width: 36, height: 36, background: GL, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>💡</div>
+                <div style={{ width: 36, height: 36, background: GL, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Lightbulb size={18} color={GD} /></div>
                 <h3 style={{ fontWeight: 700, fontSize: 14, color: '#0a0a0a', margin: 0 }}>{isTenant ? 'Tips for tenants' : 'Tips for landlords'}</h3>
               </div>
               {(isTenant ? [

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
+import { LayoutDashboard, Users, ClipboardList, Calendar, ShieldAlert, ScanLine, User, LogOut, Menu } from 'lucide-react'
 
 const G = '#1d9e75'
 const GD = '#0f6e56'
@@ -17,12 +18,12 @@ function useMobile() {
 }
 
 const NAV = [
-  { icon: '📊', label: 'Dashboard', to: '/admin' },
-  { icon: '👥', label: 'Users', to: '/admin/users' },
-  { icon: '📋', label: 'Listings', to: '/admin/listings' },
-  { icon: '📅', label: 'Viewings', to: '/admin/viewings' },
-  { icon: '🚨', label: 'Fraud reports', to: '/admin/reports' },
-  { icon: '🪪', label: 'KYC review', to: '/admin/kyc' },
+  { icon: LayoutDashboard, label: 'Dashboard', to: '/admin' },
+  { icon: Users, label: 'Users', to: '/admin/users' },
+  { icon: ClipboardList, label: 'Listings', to: '/admin/listings' },
+  { icon: Calendar, label: 'Viewings', to: '/admin/viewings' },
+  { icon: ShieldAlert, label: 'Fraud reports', to: '/admin/reports' },
+  { icon: ScanLine, label: 'KYC review', to: '/admin/kyc' },
 ]
 
 export default function AdminLayout({ title, count, subtitle, kycCount = 0, children }) {
@@ -94,7 +95,7 @@ export default function AdminLayout({ title, count, subtitle, kycCount = 0, chil
                 return (
                   <Link key={item.to} to={item.to} className="nav-lnk" onClick={() => setSidebarOpen(false)}
                     style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, textDecoration: 'none', marginBottom: 2, background: active ? GL : 'transparent', color: active ? GD : '#555', fontWeight: active ? 700 : 500, fontSize: 14, borderLeft: active ? `3px solid ${G}` : '3px solid transparent' }}>
-                    <span style={{ fontSize: 17 }}>{item.icon}</span>
+                    <item.icon size={18} strokeWidth={active ? 2.4 : 2} style={{ flexShrink: 0 }} />
                     <span style={{ flex: 1 }}>{item.label}</span>
                     {item.to === '/admin/kyc' && kycCount > 0 && (
                       <span style={{ background: '#e8590c', color: '#fff', fontSize: 10, fontWeight: 700, borderRadius: 20, padding: '1px 7px' }}>{kycCount}</span>
@@ -106,11 +107,11 @@ export default function AdminLayout({ title, count, subtitle, kycCount = 0, chil
 
             <div style={{ padding: '10px 14px 14px', borderTop: '1px solid #f0f4f1' }}>
               <Link to="/dashboard" className="nav-lnk" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, textDecoration: 'none', color: '#555', fontSize: 14, fontWeight: 500, marginBottom: 2 }}>
-                <span style={{ fontSize: 17 }}>👤</span>
+                <User size={18} style={{ flexShrink: 0 }} />
                 <span>Switch to user view</span>
               </Link>
               <button onClick={signOut} className="signout-btn" style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, border: 'none', background: 'transparent', color: '#888', fontSize: 14, fontWeight: 500, cursor: 'pointer', textAlign: 'left' }}>
-                <span style={{ fontSize: 17 }}>🚪</span>
+                <LogOut size={18} style={{ flexShrink: 0 }} />
                 <span>Sign out</span>
               </button>
             </div>
@@ -122,7 +123,7 @@ export default function AdminLayout({ title, count, subtitle, kycCount = 0, chil
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <header style={{ background: '#fff', borderBottom: '1px solid #eef2ef', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 30, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {mobile && <button onClick={() => setSidebarOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, padding: 4, color: '#555' }}>☰</button>}
+            {mobile && <button onClick={() => setSidebarOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, padding: 4, color: '#555', display: 'flex' }}><Menu size={22} /></button>}
             <div>
               <p style={{ fontWeight: 700, fontSize: 15, color: '#0a0a0a', margin: 0 }}>
                 {title}{count != null && <span style={{ color: '#aaa', fontWeight: 600 }}> ({count})</span>}
